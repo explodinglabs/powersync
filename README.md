@@ -1,6 +1,6 @@
 <p align="center">
-  <img alt="Ply logo" height="35" src="https://github.com/explodinglabs/refresh.js/blob/main/.images/logo-light.png?raw=true#gh-light-mode-only" />
-  <img alt="Ply logo" height="35" src="https://github.com/explodinglabs/refresh.js/blob/main/.images/logo-dark.png?raw=true#gh-dark-mode-only" />
+  <img alt="Logo" height="100" src="https://github.com/explodinglabs/refresh.js/blob/main/.images/logo-light.png?raw=true#gh-light-mode-only" />
+  <img alt="Logo" height="100" src="https://github.com/explodinglabs/refresh.js/blob/main/.images/logo-dark.png?raw=true#gh-dark-mode-only" />
 </p>
 
 Refresh the browser with an http request.
