@@ -6,6 +6,7 @@ services:
 
   ssehub:
     image: ghcr.io/explodinglabs/ssehub
-    expose: ["8000:8000"]
+    ports:
+      - 8080:8080
     depends_on:
       - rabbitmq
