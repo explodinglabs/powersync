@@ -8,7 +8,7 @@ _Refresh.js_ lets you **refresh the browser** with an http request.
 ## Installation
 
 Bring up the `refresh.js` container (this is just
-[ssehub](https://github.com/vgno/ssehub) with a little configuration):
+[SSEHub](https://github.com/vgno/ssehub) with a little configuration):
 
 ```sh
 docker run --detach --name refresh.js --publish 8080:8080 ghcr.io/explodinglabs/refresh.js
