@@ -20,7 +20,7 @@ Post an event to the channel (this is required to create the channel):
 curl -v -X POST -d '{"id": 1, "event": "html", "data": null}' http://localhost:8080/changes
 ```
 
-Include refresh.js in your webpage (put this at the bottom, right before
+Include refresh.js in your html (put this at the bottom, right before
 `</html>`):
 
 ```html
