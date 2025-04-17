@@ -3,7 +3,7 @@
   <img alt="Logo" height="100" src="https://github.com/explodinglabs/refresh.js/blob/main/.images/logo-dark.png?raw=true#gh-dark-mode-only" />
 </p>
 
-Refresh the browser with an http request.
+_Refresh.js_ lets you **refresh the browser** with an http request.
 
 ## Installation
 
