@@ -30,6 +30,8 @@ Include refresh.js in your html (put this at the bottom, right before
 ></script>
 ```
 
+## Usage
+
 To refresh the entire page, send a "html" event:
 
 ```sh
