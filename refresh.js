@@ -1,4 +1,4 @@
-var changesEventSource = new EventSource("/events/changes");
+var changesEventSource = new EventSource("/changes");
 
 function isExternal(url) {
   var match = url.match(
