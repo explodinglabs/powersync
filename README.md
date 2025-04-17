@@ -39,11 +39,11 @@ Bring up the required containers:
 docker compose up
 ```
 
-Include in your webpage (at the bottom, before `</body>`):
+Include in your webpage (at the bottom, after `</body>`):
 
 ```html
 <script
   type="text/javascript"
-  src="https://github.com/explodinglabs/refresh.js/refresh.js"
+  src="https://raw.githubusercontent.com/explodinglabs/refresh.js/refs/heads/main/refresh.js"
 ></script>
 ```
