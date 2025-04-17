@@ -26,7 +26,7 @@ Include refresh.js in your html (put this at the bottom, right before
 ```html
 <script
   type="text/javascript"
-  src="https://raw.githubusercontent.com/explodinglabs/refresh.js/refs/heads/main/refresh.js"
+  src="https://explodinglabs.github.io/refresh.js/refresh.js"
 ></script>
 ```
 
