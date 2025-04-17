@@ -1,4 +1,4 @@
-var changesEventSource = new EventSource(":8080/changes");
+var changesEventSource = new EventSource("http://localhost:8080/changes");
 
 function isExternal(url) {
   var match = url.match(
