@@ -42,7 +42,6 @@ changesEventSource.onopen = (event) => {
 
 changesEventSource.onerror = (event) => {
   console.log("changesEventSource error");
-  console.log(event);
 };
 
 changesEventSource.addEventListener("html", (event) => {
