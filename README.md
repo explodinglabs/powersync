@@ -1,6 +1,8 @@
+Refresh the browser with an http request.
+
 ## Installation
 
-Bring up the refresh.js container (this is just ssehub with a little
+Bring up the `refresh.js` container (this is just ssehub with a little
 configuration):
 
 ```sh
@@ -13,7 +15,8 @@ Post an event to the channel (this is required to create the channel):
 curl -v -X POST -d '{"id": 1, "event": "html", "data": null}' http://localhost:8080/changes
 ```
 
-Include refresh.js in your webpage (at the bottom, right before `</html>`):
+Include refresh.js in your webpage (put this at the bottom, right before
+`</html>`):
 
 ```html
 <script
@@ -36,9 +39,9 @@ curl -v -X POST -d '{"id": 1, "event": "css", "data": null}' http://localhost:80
 
 ## Vim Usage
 
-Here's how I send the request when a file is changed in vim.
+Here's how I send a curl request when a file is saved in vim.
 
-Add to `~/.vimrc`:
+Add to `~/.vimrc` (Vim 9+ only):
 
 ```vim
 def g:CbJobFailed(channel: channel, msg: string)
