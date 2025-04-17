@@ -1,16 +1,45 @@
-Start ssehub:
+## Installation
 
-```sh
-docker run --detach --name ssehub --publish 8080:8080 ghcr.io/explodinglabs/ssehub
+Add to `~/.vimrc`:
+
+```vim
+def g:CbJobFailed(channel: channel, msg: string)
+  echow msg
+enddef
+
+autocmd BufWritePost *.html
+  call job_start(
+    ['curl', '--fail', '--silent', '--show-error', '-X', 'POST', '--data', '{"id": 1, "event": "html", "data": null}', 'http://localhost:8080/changes'],
+    {
+      'exit_cb': function('g:CbRefreshBrowser'),
+      'err_cb': function('g:CbJobFailed')
+    }
+  )
+
+autocmd BufWritePost *.css
+  call job_start(
+    ['curl', '--fail', '--silent', '--show-error', '-X', 'POST', '--data', '{"id": 1, "event": "css", "data": null}', 'http://localhost:8080/changes'],
+    {
+      'exit_cb': function('g:CbRefreshBrowser'),
+      'err_cb': function('g:CbJobFailed')
+    }
+  )
 ```
 
-Start RabbitMQ:
+Clone this repository:
 
 ```sh
-docker run --detach --name rabbitmq --publish 5672:5672 --publish 15672:15672 rabbitmq:3-management
+git clone https://github.com/explodinglabs/refresh.js.git
+cd refresh.js
 ```
 
-Include in your webpage:
+Bring up the required containers:
+
+```sh
+docker compose up
+```
+
+Include in your webpage (at the bottom, before `</body>`):
 
 ```html
 <script

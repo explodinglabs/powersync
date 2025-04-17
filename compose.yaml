@@ -1,0 +1,11 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    environment:
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: -rabbit channel_max 0
+
+  ssehub:
+    image: ghcr.io/explodinglabs/ssehub
+    expose: ["8000:8000"]
+    depends_on:
+      - rabbitmq
