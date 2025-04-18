@@ -4,7 +4,7 @@
 </p>
 
 <p align="center">
-  <i>Refresh browser(s) with an HTTP request</i>
+  <i>Refresh browsers with an HTTP request</i>
 </p>
 
 ## How it works
@@ -18,6 +18,13 @@
   <img alt="Architecture diagram" src="https://github.com/explodinglabs/refresh.js/blob/main/.images/architecture-light.svg?raw=true#gh-light-mode-only" />
   <img alt="Architecture diagram" src="https://github.com/explodinglabs/refresh.js/blob/main/.images/architecture-dark.svg?raw=true#gh-dark-mode-only" />
 </p>
+
+## Benefits
+
+- No polling
+- Immediate effect, no delay
+- No server log pollution
+- Test many browsers at once - Chrome, Safari, Mobile, etc.
 
 ## Installation
 
