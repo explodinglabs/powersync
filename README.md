@@ -52,13 +52,13 @@ Include refresh.js in your html (put this at the bottom, right before
 
 ## Usage
 
-To refresh the entire page, send a "html" event:
+Send a "html" or "js" event to refresh the entire page:
 
 ```sh
 curl -v -X POST -d '{"id": 1, "event": "html", "data": null}' http://localhost:8080/changes
 ```
 
-To refresh just the css, send a "css" event:
+Send a "css" event to just update the styles:
 
 ```sh
 curl -v -X POST -d '{"id": 1, "event": "css", "data": null}' http://localhost:8080/changes
