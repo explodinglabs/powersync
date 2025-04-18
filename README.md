@@ -3,7 +3,14 @@
   <img alt="Logo" height="100" src="https://github.com/explodinglabs/refresh.js/blob/main/.images/logo-dark.png?raw=true#gh-dark-mode-only" />
 </p>
 
-_Refresh.js_ lets you **refresh the browser** with an http request.
+_Refresh.js_ lets you **refresh browser(s) by sending an HTTP request**.
+
+## How it works
+
+1. The webpage connects to SSEHub and listens for events.
+2. You send a `POST` request to SSEHub.
+3. SSEHub emits the request as a Server-Sent Event.
+4. The webpage receives the event and refreshes itself.
 
 <p align="center">
   <img alt="Architecture diagram" src="https://github.com/explodinglabs/refresh.js/blob/main/.images/architecture-light.svg?raw=true#gh-light-mode-only" />
@@ -12,7 +19,9 @@ _Refresh.js_ lets you **refresh the browser** with an http request.
 
 ## Installation
 
-Bring up the `refresh.js` container (this is just
+### Start the container
+
+Bring up the refresh.js container (this is just
 [SSEHub](https://github.com/vgno/ssehub) with a little configuration):
 
 ```sh
