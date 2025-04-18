@@ -55,13 +55,13 @@ Include refresh.js in your html (put this at the bottom, right before
 Send a "html" or "js" event to refresh the entire page:
 
 ```sh
-curl -v -X POST -d '{"id": 1, "event": "html", "data": null}' http://localhost:8080/changes
+curl -X POST -d '{"id": 1, "event": "html", "data": null}' http://localhost:8080/changes
 ```
 
 Send a "css" event to just update the styles:
 
 ```sh
-curl -v -X POST -d '{"id": 1, "event": "css", "data": null}' http://localhost:8080/changes
+curl -X POST -d '{"id": 1, "event": "css", "data": null}' http://localhost:8080/changes
 ```
 
 ## Vim Usage
