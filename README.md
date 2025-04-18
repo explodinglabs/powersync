@@ -3,7 +3,9 @@
   <img alt="Logo" height="100" src="https://github.com/explodinglabs/refresh.js/blob/main/.images/logo-dark.png?raw=true#gh-dark-mode-only" />
 </p>
 
-_Refresh.js_ lets you **refresh browser(s) by sending an HTTP request**.
+<p align="center">
+  Refresh browsers with HTTP requests**.
+</p>
 
 ## How it works
 
@@ -28,11 +30,15 @@ Bring up the refresh.js container (this is just
 docker run --detach --name refresh.js --publish 8080:8080 ghcr.io/explodinglabs/refresh.js
 ```
 
-Post an event to the channel (this is required to create the channel):
+### Create the channel
+
+To create the `changes` channel, simply post an event to it:
 
 ```sh
 curl -v -X POST -d '{"id": 1, "event": "html", "data": null}' http://localhost:8080/changes
 ```
+
+### Add script to your webpage
 
 Include refresh.js in your html (put this at the bottom, right before
 `</html>`):
