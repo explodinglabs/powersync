@@ -35,7 +35,7 @@ docker run --detach --name refresh.js --publish 8080:8080 ghcr.io/explodinglabs/
 To create the `changes` channel, simply post an event to it:
 
 ```sh
-curl -v -X POST -d '{"id": 1, "event": "html", "data": null}' http://localhost:8080/changes
+curl -X POST -d '{"id": 1, "event": "html", "data": null}' http://localhost:8080/changes
 ```
 
 ### Add script to your webpage
