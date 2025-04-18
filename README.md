@@ -4,7 +4,7 @@
 </p>
 
 <p align="center">
-  <i>Refresh the browser(s) with an HTTP request</i>
+  <i>Refresh browser(s) with an HTTP request</i>
 </p>
 
 ## How it works
