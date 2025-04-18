@@ -4,7 +4,7 @@
 </p>
 
 <p align="center">
-  Refresh browsers with HTTP requests**.
+  Refresh browsers with HTTP requests.
 </p>
 
 ## How it works
