@@ -24,7 +24,7 @@
 - No polling
 - Immediate effect, no delay
 - No server log pollution
-- Test many browsers at once - Chrome, Safari, Mobile, etc.
+- Test many browsers at once - Chrome, Safari, Mobile, etc. with a single request.
 
 ## Installation
 
