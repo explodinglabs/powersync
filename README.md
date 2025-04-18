@@ -30,7 +30,7 @@ Bring up the refresh.js container (this is just
 docker run --detach --name refresh.js --publish 8080:8080 ghcr.io/explodinglabs/refresh.js
 ```
 
-### Create the channel
+### Create channel
 
 To create the `changes` channel, simply post an event to it:
 
