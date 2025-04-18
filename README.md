@@ -5,6 +5,11 @@
 
 _Refresh.js_ lets you **refresh the browser** with an http request.
 
+<p align="center">
+  <img alt="Architecture diagram" src="https://github.com/explodinglabs/refresh.js/blob/main/.images/architecture-light.svg?raw=true#gh-light-mode-only" />
+  <img alt="Architecture diagram" src="https://github.com/explodinglabs/refresh.js/blob/main/.images/architecture-dark.svg?raw=true#gh-dark-mode-only" />
+</p>
+
 ## Installation
 
 Bring up the `refresh.js` container (this is just
