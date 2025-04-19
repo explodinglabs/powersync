@@ -9,9 +9,9 @@
 
 ## How it works
 
-1. The webpage connects to SSEHub and listens for events.
-2. You send a `POST` request to SSEHub.
-3. SSEHub emits the request as a Server-Sent Event.
+1. Send a `POST` request to SSEHub.
+2. SSEHub emits the request as a Server-Sent Event.
+3. The webpage is connected to SSEHub and listening for events.
 4. The webpage receives the event and refreshes itself.
 
 <p align="center">
@@ -37,7 +37,7 @@ Bring up the refresh.js container (this is just
 docker run --detach --name refresh.js --publish 8080:8080 ghcr.io/explodinglabs/refresh.js
 ```
 
-### Create channel
+### Create a Channel
 
 To create the `changes` channel, simply post an event to it:
 
@@ -45,9 +45,11 @@ To create the `changes` channel, simply post an event to it:
 curl -X POST -d '{"id": 1, "event": "html", "data": null}' http://localhost:8080/changes
 ```
 
-### Add script to your webpage
+This works because SSEHub is configured with `"allowUndefinedChannels": true`.
 
-Include refresh.js in your html (put this at the bottom, right before
+### Add Refresh.js to Your Webpage
+
+Include `refresh.js` in your html (put this at the bottom, right before
 `</html>`):
 
 ```html
@@ -71,7 +73,7 @@ Send a "css" event to just update the styles:
 curl -X POST -d '{"id": 1, "event": "css", "data": null}' http://localhost:8080/changes
 ```
 
-## Vim Usage
+### Vim Usage
 
 Here's how I send a curl request when a file is saved in vim.
 
@@ -101,9 +103,21 @@ autocmd BufWritePost *.css
   )
 ```
 
-## Build and push the image
+## Troubleshooting
+
+To debug connecting, start a connection from the command-line:
 
 ```sh
-docker build -t ghcr.io/explodinglabs/refresh.js .
-docker push ghcr.io/explodinglabs/refresh.js
+curl http://localhost/changes
 ```
+
+### 404 Channel does not exist
+
+An SSE channel needs to be created before connecting, otherwise you get
+"Channel does not exist". Channels are created when the first event is
+published to it. See [Create a Channel](#create_a_channel).
+
+### 403 Forbidden
+
+This can mean you've published to a domain that's not listed in
+`restrictPublish` in `ssehub.json`.
