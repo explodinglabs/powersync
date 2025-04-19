@@ -37,6 +37,10 @@ Bring up the refresh.js container (this is just
 docker run --detach --name refresh.js --publish 8080:8080 ghcr.io/explodinglabs/refresh.js
 ```
 
+Port 8080 is exposed for you to `POST` to and for the browser connect to. This
+port is hard-coded in `refresh.js`. If you want to use a different port,
+download `refresh.js` and edit the port on the first line.
+
 ### Create a Channel
 
 Create the `changes` channel by simply post an event to it:
