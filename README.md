@@ -39,7 +39,7 @@ docker run --detach --name refresh.js --publish 8080:8080 ghcr.io/explodinglabs/
 
 ### Create a Channel
 
-To create the `changes` channel, simply post an event to it:
+Create the `changes` channel by simply post an event to it:
 
 ```sh
 curl -X POST -d '{"id": 1, "event": "html", "data": null}' http://localhost:8080/changes
@@ -50,7 +50,7 @@ This works because SSEHub is configured with `"allowUndefinedChannels": true`.
 ### Add Refresh.js to Your Webpage
 
 Include `refresh.js` in your html (put this at the bottom, right before
-`</html>`):
+`</body>`):
 
 ```html
 <script
