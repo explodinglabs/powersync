@@ -4,22 +4,12 @@
     "port": 8080,
     "bind-ip": "0.0.0.0",
     "logdir": "./",
-    "pingInterval": 5,
+    "pingInterval": 15,
     "pingEvent": false,
     "threadsPerChannel": 2,
     "allowUndefinedChannels": true
   },
-  "amqp": {
-    "enabled": false,
-    "host": "rabbitmq",
-    "port": 5672,
-    "user": "guest",
-    "password": "guest",
-    "exchange": "amq.fanout"
-  },
   "default": {
-    "cacheAdapter": "leveldb",
-    "cacheLength": 500,
     "allowedOrigins": "*"
   }
 }

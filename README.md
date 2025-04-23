@@ -28,60 +28,97 @@
 
 ## Installation
 
-### Start the container
+### 1. Start the Refresh container
 
-Bring up the refresh container (this is just
+Bring up the Refresh container (this is just
 [SSEHub](https://github.com/vgno/ssehub) with a little configuration):
 
 ```sh
 docker run --detach --name refresh --publish 8080:8080 ghcr.io/explodinglabs/refresh
 ```
 
-Port 8080 is exposed for you to `POST` to and for the browser connect to. This
-port is hard-coded in `refresh.js`. If you want to use a different port,
-download `refresh.js` and edit the port on the first line.
-
-### Create a Channel
-
-Create the `changes` channel by simply post an event to it:
+Ensure the service is running with
 
 ```sh
-curl -X POST -d '{"id": 1, "event": "html", "data": null}' http://localhost:8080/changes
+docker logs refresh
 ```
 
-This works because SSEHub is configured with `"allowUndefinedChannels": true`.
+You should see:
 
-### Add Refresh.js to Your Webpage
+```
+Listening on 0.0.0.0:8080
+Started client router thread.
+```
 
-Include `refresh.js` in your html (put this at the bottom, right before
-`</body>`):
+### 2. Create a Channel
+
+Create a channel by simply posting an event to it:
+
+```sh
+curl -X POST -d '{"id": 1, "event": "html", "data": null}' -w '%{response_code}' http://localhost:8080/refresh
+```
+
+Here we used "refresh" as the channel name, but you could use your app's name.
+
+#### Test the connection
+
+To test, start a connection like:
+
+```sh
+curl http://localhost:8080/refresh
+```
+
+You should see:
+
+```
+:ok
+
+```
+
+### Add the Refresh script to your HTML
+
+Include the `refresh.js` script in your page (put this at the bottom, right
+before `</body>`):
 
 ```html
 <script
   type="text/javascript"
-  data-events-uri=":8080/changes"
+  data-events-uri=":8080/refresh"
   src="https://explodinglabs.github.io/refresh/refresh.js"
   async
 ></script>
 ```
 
-## Usage
+`data-events-uri` is the location of the event source (the refresh container).
+If the protocol and host are omitted, `refresh.js` will use the ones in
+`window.location` (the current url in the browser window).
 
-Send a "html" or "js" event to refresh the entire page:
+Another option is to set the events uri to a path like `/refresh` and then
+reverse proxy that, usually to `http://localhost:8080/refresh`.
 
-```sh
-curl -X POST -d '{"id": 1, "event": "html", "data": null}' http://localhost:8080/changes
+Load your web page. The javascript console should show:
+
+```
+eventSource open
 ```
 
-Send a "css" event to just update the styles:
+## Usage
+
+To refresh the entire page, send a `html` or `js` event:
 
 ```sh
-curl -X POST -d '{"id": 1, "event": "css", "data": null}' http://localhost:8080/changes
+curl -X POST -d '{"id": 1, "event": "html", "data": null}' http://localhost:8080/refresh
+```
+
+To update just the styles, send a `css` event:
+
+```sh
+curl -X POST -d '{"id": 1, "event": "css", "data": null}' http://localhost:8080/refresh
 ```
 
 ### Vim Usage
 
-Here's how I send a curl request when a file is saved in vim.
+Here's how I refresh the browser when a file is saved in vim.
 
 Add to `~/.vimrc` (Vim 9+ only):
 
@@ -90,9 +127,9 @@ def g:CbJobFailed(channel: channel, msg: string)
   echow msg
 enddef
 
-autocmd BufWritePost *.html
+autocmd BufWritePost *.html,*.js
   call job_start(
-    ['curl', '--fail', '--silent', '--show-error', '-X', 'POST', '--data', '{"id": 1, "event": "html", "data": null}', 'http://localhost:8080/changes'],
+    ['curl', '--fail', '--silent', '--show-error', '-X', 'POST', '--data', '{"id": 1, "event": "html", "data": null}', 'http://localhost:8080/refresh'],
     {
       'exit_cb': function('g:CbRefreshBrowser'),
       'err_cb': function('g:CbJobFailed')
@@ -101,29 +138,10 @@ autocmd BufWritePost *.html
 
 autocmd BufWritePost *.css
   call job_start(
-    ['curl', '--fail', '--silent', '--show-error', '-X', 'POST', '--data', '{"id": 1, "event": "css", "data": null}', 'http://localhost:8080/changes'],
+    ['curl', '--fail', '--silent', '--show-error', '-X', 'POST', '--data', '{"id": 1, "event": "css", "data": null}', 'http://localhost:8080/refresh'],
     {
       'exit_cb': function('g:CbRefreshBrowser'),
       'err_cb': function('g:CbJobFailed')
     }
   )
 ```
-
-## Troubleshooting
-
-To debug connecting, start a connection from the command-line:
-
-```sh
-curl http://localhost/changes
-```
-
-### 404 Channel does not exist
-
-An SSE channel needs to be created before connecting, otherwise you get
-"Channel does not exist". Channels are created when the first event is
-published to it. See [Create a Channel](#create_a_channel).
-
-### 403 Forbidden
-
-This can mean you've published to a domain that's not listed in
-`restrictPublish` in `ssehub.json`.

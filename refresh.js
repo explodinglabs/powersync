@@ -1,4 +1,9 @@
-var changesEventSource = new EventSource("http://localhost:8080/changes");
+let uri = scriptTag?.dataset.uri || "";
+if (uri.startsWith(":")) {
+  uri = `${window.location.protocol}//${window.location.hostname}${uri}`;
+}
+
+const eventSource = new EventSource(uri);
 
 function isExternal(url) {
   var match = url.match(
@@ -36,22 +41,22 @@ function refreshCss() {
   }
 }
 
-changesEventSource.onopen = (event) => {
-  console.log("changesEventSource open");
+eventSource.onopen = (event) => {
+  console.log("eventSource open");
 };
 
-changesEventSource.onerror = (event) => {
-  console.log("changesEventSource error");
+eventSource.onerror = (event) => {
+  console.log("eventSource error");
 };
 
-changesEventSource.addEventListener("html", (event) => {
+eventSource.addEventListener("html", (event) => {
   document.location.reload();
 });
 
-changesEventSource.addEventListener("js", (event) => {
+eventSource.addEventListener("js", (event) => {
   document.location.reload();
 });
 
-changesEventSource.addEventListener("css", (event) => {
+eventSource.addEventListener("css", (event) => {
   refreshCss();
 });
