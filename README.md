@@ -37,19 +37,6 @@ Bring up the Refresh container (this is just
 docker run --detach --name refresh --publish 8080:8080 ghcr.io/explodinglabs/refresh
 ```
 
-Ensure the service is running with
-
-```sh
-docker logs refresh
-```
-
-You should see:
-
-```
-Listening on 0.0.0.0:8080
-Started client router thread.
-```
-
 ### 2. Create a Channel
 
 Create a channel by simply posting an event to it:
@@ -60,22 +47,7 @@ curl -X POST -d '{"id": 1, "event": "html", "data": null}' -w '%{response_code}'
 
 Here we used "refresh" as the channel name, but you could use your app's name.
 
-#### Test the connection
-
-To test, start a connection like:
-
-```sh
-curl http://localhost:8080/refresh
-```
-
-You should see:
-
-```
-:ok
-
-```
-
-### Add the Refresh script to your HTML
+### 3. Add the Refresh script to your HTML
 
 Include the `refresh.js` script in your page (put this at the bottom, right
 before `</body>`):
@@ -95,12 +67,6 @@ If the protocol and host are omitted, `refresh.js` will use the ones in
 
 Another option is to set the events uri to a path like `/refresh` and then
 reverse proxy that, usually to `http://localhost:8080/refresh`.
-
-Load your web page. The javascript console should show:
-
-```
-eventSource open
-```
 
 ## Usage
 
@@ -144,4 +110,50 @@ autocmd BufWritePost *.css
       'err_cb': function('g:CbJobFailed')
     }
   )
+```
+
+## Troubleshooting
+
+Here are some tips for locating problems.
+
+### Ensure the service is running
+
+Check:
+
+```sh
+docker logs refresh
+```
+
+You should see:
+
+```
+Listening on 0.0.0.0:8080
+Started client router thread.
+```
+
+### Test the connection
+
+Try:
+
+```sh
+curl http://localhost:8080/refresh
+```
+
+You should see:
+
+```
+:ok
+
+```
+
+Here you can watch the messages coming in.
+
+If you get 404 Not Found, have you created the channel?
+
+### Check the javascript console
+
+It should show:
+
+```
+eventSource open
 ```
