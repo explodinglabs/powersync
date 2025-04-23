@@ -1,6 +1,6 @@
 <p align="center">
-  <img alt="Logo" height="100" src="https://github.com/explodinglabs/refresh.js/blob/main/.images/logo-light.png?raw=true#gh-light-mode-only" />
-  <img alt="Logo" height="100" src="https://github.com/explodinglabs/refresh.js/blob/main/.images/logo-dark.png?raw=true#gh-dark-mode-only" />
+  <img alt="Logo" height="100" src="https://github.com/explodinglabs/refresh/blob/main/.images/logo-light.png?raw=true#gh-light-mode-only" />
+  <img alt="Logo" height="100" src="https://github.com/explodinglabs/refresh/blob/main/.images/logo-dark.png?raw=true#gh-dark-mode-only" />
 </p>
 
 <p align="center">
@@ -15,8 +15,8 @@
 4. The webpage receives the event and refreshes itself.
 
 <p align="center">
-  <img alt="Architecture diagram" src="https://github.com/explodinglabs/refresh.js/blob/main/.images/architecture-light.svg?raw=true#gh-light-mode-only" />
-  <img alt="Architecture diagram" src="https://github.com/explodinglabs/refresh.js/blob/main/.images/architecture-dark.svg?raw=true#gh-dark-mode-only" />
+  <img alt="Architecture diagram" src="https://github.com/explodinglabs/refresh/blob/main/.images/architecture-light.svg?raw=true#gh-light-mode-only" />
+  <img alt="Architecture diagram" src="https://github.com/explodinglabs/refresh/blob/main/.images/architecture-dark.svg?raw=true#gh-dark-mode-only" />
 </p>
 
 ## Benefits
@@ -30,11 +30,11 @@
 
 ### Start the container
 
-Bring up the refresh.js container (this is just
+Bring up the refresh container (this is just
 [SSEHub](https://github.com/vgno/ssehub) with a little configuration):
 
 ```sh
-docker run --detach --name refresh.js --publish 8080:8080 ghcr.io/explodinglabs/refresh.js
+docker run --detach --name refresh --publish 8080:8080 ghcr.io/explodinglabs/refresh
 ```
 
 Port 8080 is exposed for you to `POST` to and for the browser connect to. This
@@ -59,7 +59,9 @@ Include `refresh.js` in your html (put this at the bottom, right before
 ```html
 <script
   type="text/javascript"
-  src="https://explodinglabs.github.io/refresh.js/refresh.js"
+  data-events-uri=":8080/changes"
+  src="https://explodinglabs.github.io/refresh/refresh.js"
+  async
 ></script>
 ```
 
