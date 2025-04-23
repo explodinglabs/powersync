@@ -97,7 +97,6 @@ autocmd BufWritePost *.html,*.js
   call job_start(
     ['curl', '--fail', '--silent', '--show-error', '-X', 'POST', '--data', '{"id": 1, "event": "html", "data": null}', 'http://localhost:8080/refresh'],
     {
-      'exit_cb': function('g:CbRefreshBrowser'),
       'err_cb': function('g:CbJobFailed')
     }
   )
@@ -106,7 +105,6 @@ autocmd BufWritePost *.css
   call job_start(
     ['curl', '--fail', '--silent', '--show-error', '-X', 'POST', '--data', '{"id": 1, "event": "css", "data": null}', 'http://localhost:8080/refresh'],
     {
-      'exit_cb': function('g:CbRefreshBrowser'),
       'err_cb': function('g:CbJobFailed')
     }
   )
