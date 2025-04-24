@@ -54,7 +54,7 @@ You should see:
 :
 ```
 
-### 3. Connect to the event source in your web page
+### 2. Connect to the event source in your web page
 
 Include the `refresh.js` script in your HTML (put this at the bottom, right
 before `</body>`):
@@ -81,7 +81,7 @@ then reverse proxy that to `http://localhost:8080/refresh`.
 `data-events-topic` is the topic to subscribe to. We used the topic name
 "refresh", but you could use your app's name.
 
-## Usage
+### 3. Send a request
 
 Publishing requires a JWT token, so set one:
 
