@@ -70,16 +70,16 @@ before `</body>`):
 ></script>
 ```
 
-- `data-events-uri` is the location of the event source (the Refresh container).
-  We could use the full URL like `http://localhost:8080/refresh`, but that
-  wouldn't work across the network (for example, to test a mobile browser you
-  need to connect to the event source by it's ip address, not `localhost`). By
-  omitting the protocol and host, `refresh.js` will use the ones in
-  `window.location` (the url in the browser window). Another option is to use
-  a path like `/refresh` and then reverse proxy that to
-  `http://localhost:8080/refresh`.
-- `data-events-topic` is the topic to subscribe to. We used the topic name
-  "refresh", but you could use your app's name.
+`data-events-uri` is the location of the event source (the Refresh container).
+We could use the full URL like `http://localhost:8080/refresh`, but that
+wouldn't work across the network (for example, to test a mobile browser you need
+to connect to the event source by it's ip address, not `localhost`). By omitting
+the protocol and host, `refresh.js` will use the ones in `window.location` (the
+url in the browser window). Another option is to use a path like `/refresh` and
+then reverse proxy that to `http://localhost:8080/refresh`.
+
+`data-events-topic` is the topic to subscribe to. We used the topic name
+"refresh", but you could use your app's name.
 
 ## Usage
 
