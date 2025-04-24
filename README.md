@@ -54,7 +54,7 @@ You should see:
 :
 ```
 
-### 2. Connect to the event source in your web page
+### 2. Add a script to your web page
 
 Include the `refresh.js` script in your HTML (put this at the bottom, right
 before `</body>`):
@@ -83,13 +83,13 @@ then reverse proxy that to `http://localhost:8080/refresh`.
 
 ### 3. Send a request
 
-Publishing requires a JWT token, so set one:
+Publishing requires a JWT token:
 
 ```sh
 export TOKEN=eyJhbGciOiJIUzI1NiJ9.eyJtZXJjdXJlIjp7InB1Ymxpc2giOlsiKiJdfX0.PXwpfIGng6KObfZlcOXvcnWCJOWTFLtswGI5DZuWSK4
 ```
 
-This token works because it matches the secret that's hard-coded in the
+This specific token works because it matches the secret that's hard-coded in the
 container. If security is important, change the secret (see
 [Configuration](#configuration)).
 
@@ -102,9 +102,10 @@ curl -X POST \
   http://localhost:8080/.well-known/mercure
 ```
 
-To update just the styles, send a `css` event (`data=css`). This won't do a
-full refresh of the page, just reload the stylesheets. Note this only works if
-your css is loaded in `<link>` tags, not in `<style>` tags.
+To update just the stylesheets, send a `css` event (`data=css`). This won't do a
+full refresh of the page, just refresh the styles. Note this only works if your
+css is loaded from external stylesheets in `<link>` tags, not embedded in
+`<style>` tags.
 
 ## Configuration
 
