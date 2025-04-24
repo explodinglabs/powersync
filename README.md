@@ -30,7 +30,7 @@
 
 ## Installation
 
-### 1. Start the Event Source service
+### 1. Start the Refresh service
 
 The service runs inside a Docker container, so ensure [Docker is
 installed](https://docs.docker.com/get-docker/).
@@ -42,7 +42,7 @@ a little configuration):
 docker run --rm --name refresh --publish 8080:80 ghcr.io/explodinglabs/refresh
 ```
 
-Test the connection with:
+Test it with:
 
 ```sh
 curl 'http://localhost:8080/.well-known/mercure?topic=refresh'
