@@ -9,12 +9,12 @@
 
 ## Overview
 
-### How it works
-
 <p align="center">
   <img alt="Architecture diagram" src="https://github.com/explodinglabs/refresh/blob/main/.images/architecture-light.svg?raw=true#gh-light-mode-only" />
   <img alt="Architecture diagram" src="https://github.com/explodinglabs/refresh/blob/main/.images/architecture-dark.svg?raw=true#gh-dark-mode-only" />
 </p>
+
+### How it works
 
 1. Send a `POST` request to the event source.
 2. Event source emits the request as a Server-Sent Event.
