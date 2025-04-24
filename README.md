@@ -18,7 +18,7 @@
 
 1. Send a `POST` request to the event source.
 2. Event source emits the request as a Server-Sent Event.
-3. The webpage is connected to the event source and listening for events.
+3. The webpage is connected to the event source and is listening for events.
 4. The webpage receives the event and refreshes itself.
 
 ### Benefits of this method
