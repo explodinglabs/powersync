@@ -71,27 +71,32 @@ before `</body>`):
 ```
 
 `data-events-uri` is the location of the event source (the Refresh container).
-If the protocol and host are omitted, `refresh.js` will use the ones in
-`window.location` (the url in the browser window).
+
+We could use the full URL like `http://localhost:8080/refresh`, but that
+wouldn't work across the network (for example, to test a mobile browser you need
+to connect to the event source by it's ip address, not `localhost`). By omitting
+the protocol and host, `refresh.js` will use the ones in `window.location` (the
+url in the browser window).
 
 Another option is to use a path like `/refresh` and then reverse proxy that to
 `http://localhost:8080/refresh`.
 
-We used the topic name "refresh", but you could use your app's name.
+`data-events-topic` is the topic to subscribe to. We used the topic name
+"refresh", but you could use your app's name.
 
 ## Usage
 
-Set your JWT token:
+Publishing requires a JWT token, so set one:
 
 ```sh
 export TOKEN=eyJhbGciOiJIUzI1NiJ9.eyJtZXJjdXJlIjp7InB1Ymxpc2giOlsiKiJdfX0.PXwpfIGng6KObfZlcOXvcnWCJOWTFLtswGI5DZuWSK4
 ```
 
-This token works because the secret is hard-coded in the container. If security
-is important for your use case, change the secret (see
+This token works because it matches the secret that's hard-coded in the
+container. If security is important, change the secret (see
 [Configuration](#configuration)).
 
-To refresh the entire page, send a `html` event:
+To refresh the page, send a `html` event:
 
 ```sh
 curl -X POST \
@@ -131,7 +136,7 @@ autocmd BufWritePost *.html,*.js
     [
       'curl', '--fail', '--silent', '--show-error',
       '-X', 'POST',
-      '-H', 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJtZXJjdXJlIjp7InB1Ymxpc2giOlsiKiJdfX0.PXwpfIGng6KObfZlcOXvcnWCJOWTFLtswGI5DZuWSK4',
+      '-H', 'Authorization: Bearer (your token)',
       '--data', 'topic=refresh&data=html',
       'http://localhost:8080/.well-known/mercure'
     ],
@@ -143,7 +148,7 @@ autocmd BufWritePost *.css
     [
       'curl', '--fail', '--silent', '--show-error',
       '-X', 'POST',
-      '-H', 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJtZXJjdXJlIjp7InB1Ymxpc2giOlsiKiJdfX0.PXwpfIGng6KObfZlcOXvcnWCJOWTFLtswGI5DZuWSK4',
+      '-H', 'Authorization: Bearer (your token)',
       '--data', 'topic=refresh&data=css',
       'http://localhost:8080/.well-known/mercure'
     ],
