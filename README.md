@@ -11,17 +11,17 @@
 
 ### How it works
 
-1. Send a `POST` request to the event source.
-2. Event source emits the request as a Server-Sent Event.
-3. The webpage is connected to the event source and listening for events.
-4. The webpage receives the event and refreshes itself.
-
 <p align="center">
   <img alt="Architecture diagram" src="https://github.com/explodinglabs/refresh/blob/main/.images/architecture-light.svg?raw=true#gh-light-mode-only" />
   <img alt="Architecture diagram" src="https://github.com/explodinglabs/refresh/blob/main/.images/architecture-dark.svg?raw=true#gh-dark-mode-only" />
 </p>
 
-### Benefits
+1. Send a `POST` request to the event source.
+2. Event source emits the request as a Server-Sent Event.
+3. The webpage is connected to the event source and listening for events.
+4. The webpage receives the event and refreshes itself.
+
+### Benefits of this method
 
 - No polling
 - Immediate effect, no delay
@@ -35,8 +35,8 @@
 The service runs inside a Docker container, so ensure [Docker is
 installed](https://docs.docker.com/get-docker/).
 
-Start the Refresh container (this is just [Mercure](https://mercure.rocks/)
-with a little configuration):
+Start the Refresh container (this is just [Mercure](https://mercure.rocks/) with
+a little configuration):
 
 ```sh
 docker run --rm --name refresh --publish 8080:80 ghcr.io/explodinglabs/refresh
