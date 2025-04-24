@@ -7,11 +7,13 @@
   <i>Refresh browsers with an HTTP request</i>
 </p>
 
-## How it works
+## Overview
 
-1. Send a `POST` request to SSEHub.
-2. SSEHub emits the request as a Server-Sent Event.
-3. The webpage is connected to SSEHub and listening for events.
+### How it works
+
+1. Send a `POST` request to the event source.
+2. Event source emits the request as a Server-Sent Event.
+3. The webpage is connected to the event source and listening for events.
 4. The webpage receives the event and refreshes itself.
 
 <p align="center">
@@ -19,7 +21,7 @@
   <img alt="Architecture diagram" src="https://github.com/explodinglabs/refresh/blob/main/.images/architecture-dark.svg?raw=true#gh-dark-mode-only" />
 </p>
 
-## Benefits
+### Benefits
 
 - No polling
 - Immediate effect, no delay
