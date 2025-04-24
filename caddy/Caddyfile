@@ -1,0 +1,13 @@
+:80
+
+mercure {
+	publisher_jwt "!ChangeThisMercureHubJWTSecretKey!"
+	subscriber_jwt "!ChangeThisMercureHubJWTSecretKey!"
+	anonymous
+	cors_origins *
+	publish_origins *
+}
+
+header {
+	Access-Control-Allow-Origin *
+}
