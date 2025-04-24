@@ -28,63 +28,94 @@
 
 ## Installation
 
-### 1. Start the Refresh container
+### 1. Start the Event Source service
 
-Bring up the Refresh container (this is just
-[SSEHub](https://github.com/vgno/ssehub) with a little configuration):
+The service runs inside a Docker container, so ensure [Docker is
+installed](https://docs.docker.com/get-docker/).
 
-```sh
-docker run --detach --name refresh --publish 8080:8080 ghcr.io/explodinglabs/refresh
-```
-
-### 2. Create a Channel
-
-Create a channel by simply posting an event to it:
+Start the Refresh container (this is just [Mercure](https://mercure.rocks/)
+with a little configuration):
 
 ```sh
-curl -X POST -d '{"id": 1, "event": "html", "data": null}' -w '%{response_code}' http://localhost:8080/refresh
+docker run --rm --name refresh --publish 8080:80 ghcr.io/explodinglabs/refresh
 ```
 
-Here we used "refresh" as the channel name, but you could use your app's name.
+Test the connection with:
 
-### 3. Add the Refresh script to your HTML
+```sh
+curl 'http://localhost:8080/.well-known/mercure?topic=refresh'
+```
 
-Include the `refresh.js` script in your page (put this at the bottom, right
+You should see:
+
+```
+:
+```
+
+### 3. Connect to the event source in your web page
+
+Include the `refresh.js` script in your HTML (put this at the bottom, right
 before `</body>`):
 
 ```html
 <script
+  id="refresh-script"
   type="text/javascript"
-  data-events-uri=":8080/refresh"
+  data-events-uri=":8080/.well-known/mercure"
+  data-events-topic="refresh"
   src="https://explodinglabs.github.io/refresh/refresh.js"
   async
 ></script>
 ```
 
-`data-events-uri` is the location of the event source (the refresh container).
+`data-events-uri` is the location of the event source (the Refresh container).
 If the protocol and host are omitted, `refresh.js` will use the ones in
-`window.location` (the current url in the browser window).
+`window.location` (the url in the browser window).
 
-Another option is to set the events uri to a path like `/refresh` and then
-reverse proxy that, usually to `http://localhost:8080/refresh`.
+Another option is to use a path like `/refresh` and then reverse proxy that to
+`http://localhost:8080/refresh`.
+
+We used the topic name "refresh", but you could use your app's name.
 
 ## Usage
 
-To refresh the entire page, send a `html` or `js` event:
+Set your JWT token:
 
 ```sh
-curl -X POST -d '{"id": 1, "event": "html", "data": null}' http://localhost:8080/refresh
+export TOKEN=eyJhbGciOiJIUzI1NiJ9.eyJtZXJjdXJlIjp7InB1Ymxpc2giOlsiKiJdfX0.PXwpfIGng6KObfZlcOXvcnWCJOWTFLtswGI5DZuWSK4
 ```
 
-To update just the styles, send a `css` event:
+This token works because the secret is hard-coded in the container. If security
+is important for your use case, change the secret (see
+[Configuration](#configuration)).
+
+To refresh the entire page, send a `html` event:
 
 ```sh
-curl -X POST -d '{"id": 1, "event": "css", "data": null}' http://localhost:8080/refresh
+curl -X POST \
+  -H "Authorization: Bearer $TOKEN" \
+  -d "topic=refresh&data=html" \
+  http://localhost:8080/.well-known/mercure
 ```
 
-### Vim Usage
+To update just the styles, send a `css` event (`data=css`). This won't do a
+full refresh of the page, just reload the stylesheets. Note this only works if
+your css is loaded in `<link>` tags, not in `<style>` tags.
 
-Here's how I refresh the browser when a file is saved in vim.
+## Configuration
+
+By default no authentication needed to subscribe, because the Caddyfile has the
+`anonymous` directive. But a token is needed to publish.
+
+The secrets are set in the Caddyfile. If you want to change them:
+
+1. Write your own Caddyfile file with a different keys.
+2. Mount the Caddyfile into the container at `/etc/caddy/Caddyfile`.
+3. [Generate a new token](https://jwt.io/), with payload `{"mercure": {"publish": ["*"]}}`, and your secret in the "VERIFY SIGNATURE" section.
+
+## Bonus: Vim Usage
+
+Here's how I refresh the browser when a file is saved in Vim.
 
 Add to `~/.vimrc` (Vim 9+ only):
 
@@ -95,63 +126,25 @@ enddef
 
 autocmd BufWritePost *.html,*.js
   call job_start(
-    ['curl', '--fail', '--silent', '--show-error', '-X', 'POST', '--data', '{"id": 1, "event": "html", "data": null}', 'http://localhost:8080/refresh'],
-    {
-      'err_cb': function('g:CbJobFailed')
-    }
+    [
+      'curl', '--fail', '--silent', '--show-error',
+      '-X', 'POST',
+      '-H', 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJtZXJjdXJlIjp7InB1Ymxpc2giOlsiKiJdfX0.PXwpfIGng6KObfZlcOXvcnWCJOWTFLtswGI5DZuWSK4',
+      '--data', 'topic=refresh&data=html',
+      'http://localhost:8080/.well-known/mercure'
+    ],
+    {'err_cb': function('g:CbJobFailed')}
   )
 
 autocmd BufWritePost *.css
   call job_start(
-    ['curl', '--fail', '--silent', '--show-error', '-X', 'POST', '--data', '{"id": 1, "event": "css", "data": null}', 'http://localhost:8080/refresh'],
-    {
-      'err_cb': function('g:CbJobFailed')
-    }
+    [
+      'curl', '--fail', '--silent', '--show-error',
+      '-X', 'POST',
+      '-H', 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJtZXJjdXJlIjp7InB1Ymxpc2giOlsiKiJdfX0.PXwpfIGng6KObfZlcOXvcnWCJOWTFLtswGI5DZuWSK4',
+      '--data', 'topic=refresh&data=css',
+      'http://localhost:8080/.well-known/mercure'
+    ],
+    {'err_cb': function('g:CbJobFailed')}
   )
-```
-
-## Troubleshooting
-
-Here are some tips for locating problems.
-
-### Ensure the service is running
-
-Check:
-
-```sh
-docker logs refresh
-```
-
-You should see:
-
-```
-Listening on 0.0.0.0:8080
-Started client router thread.
-```
-
-### Test the connection
-
-Try:
-
-```sh
-curl http://localhost:8080/refresh
-```
-
-You should see:
-
-```
-:ok
-
-```
-
-Here you can watch the messages coming in.
-
-If you get 404 Not Found, have you created the channel?
-
-### Check the javascript console
-
-It should show:
-
-```
-eventSource open
 ```

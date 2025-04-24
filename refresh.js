@@ -1,9 +1,11 @@
-let uri = scriptTag?.dataset.uri || "";
+var uri = document.getElementById("refresh-script")?.dataset.eventsUri;
 if (uri.startsWith(":")) {
   uri = `${window.location.protocol}//${window.location.hostname}${uri}`;
 }
-
-const eventSource = new EventSource(uri);
+const url = new URL(uri);
+console.log(url);
+url.searchParams.append("topic", scriptTag.dataset.eventsTopic);
+const eventSource = new EventSource(url);
 
 function isExternal(url) {
   var match = url.match(
@@ -50,6 +52,7 @@ eventSource.onerror = (event) => {
 };
 
 eventSource.addEventListener("html", (event) => {
+  console.log("here");
   document.location.reload();
 });
 

@@ -1,3 +1,3 @@
-FROM quay.io/vgno/ssehub:v0.2.2
+FROM dunglas/mercure:v0.19
 
-COPY ssehub.json /ssehub/conf/config.json
+COPY caddy/Caddyfile /etc/caddy/Caddyfile
