@@ -1,17 +1,17 @@
 <p align="center">
-  <img alt="Logo" height="100" src="https://github.com/explodinglabs/refresh/blob/main/.images/logo-light.png?raw=true#gh-light-mode-only" />
-  <img alt="Logo" height="100" src="https://github.com/explodinglabs/refresh/blob/main/.images/logo-dark.png?raw=true#gh-dark-mode-only" />
+  <img alt="Logo" height="100" src="https://github.com/explodinglabs/powersync/blob/main/.images/logo-light.png?raw=true#gh-light-mode-only" />
+  <img alt="Logo" height="100" src="https://github.com/explodinglabs/powersync/blob/main/.images/logo-dark.png?raw=true#gh-dark-mode-only" />
 </p>
 
 <p align="center">
-  <i>Refresh browsers with an HTTP request</i>
+  <i>BrowserSync alternative for Power Users</i>
 </p>
 
 ## Overview
 
 <p align="center">
-  <img alt="Architecture diagram" src="https://github.com/explodinglabs/refresh/blob/main/.images/architecture-light.svg?raw=true#gh-light-mode-only" />
-  <img alt="Architecture diagram" src="https://github.com/explodinglabs/refresh/blob/main/.images/architecture-dark.svg?raw=true#gh-dark-mode-only" />
+  <img alt="Architecture diagram" src="https://github.com/explodinglabs/powersync/blob/main/.images/architecture-light.svg?raw=true#gh-light-mode-only" />
+  <img alt="Architecture diagram" src="https://github.com/explodinglabs/powersync/blob/main/.images/architecture-dark.svg?raw=true#gh-dark-mode-only" />
 </p>
 
 ### How it works
@@ -27,25 +27,26 @@
 - Immediate effect, no delay
 - No server log pollution
 - Test many browsers at once - Chrome, Safari, Mobile, etc.
+- No need for a "development server"
 
 ## Installation
 
-### 1. Start the Refresh service
+### 1. Start the PowerSync service
 
 The service runs inside a Docker container, so ensure [Docker is
 installed](https://docs.docker.com/get-docker/).
 
-Start the Refresh container (this is just [Mercure](https://mercure.rocks/) with
+Start the PowerSync container (this is just [Mercure](https://mercure.rocks/) with
 a little configuration):
 
 ```sh
-docker run --rm --name refresh --publish 8080:80 ghcr.io/explodinglabs/refresh
+docker run --rm --name powersync --publish 8080:80 ghcr.io/explodinglabs/powersync
 ```
 
 Test it with:
 
 ```sh
-curl 'http://localhost:8080/.well-known/mercure?topic=refresh'
+curl 'http://localhost:8080/.well-known/mercure?topic=powersync'
 ```
 
 You should see:
@@ -56,30 +57,31 @@ You should see:
 
 ### 2. Add a script to your web page
 
-Include the `refresh.js` script in your HTML (put this at the bottom, right
+Include the `powersync.js` script in your HTML (put this at the bottom, right
 before `</body>`):
 
 ```html
 <script
-  id="refresh-script"
+  id="powersync"
   type="text/javascript"
   data-events-uri=":8080/.well-known/mercure"
-  data-events-topic="refresh"
-  src="https://explodinglabs.github.io/refresh/refresh.js"
+  data-events-topic="powersync"
+  src="https://powersync.github.io/powersync.js"
   async
 ></script>
 ```
 
-`data-events-uri` is the location of the event source (the Refresh container).
-We could use the full URL like `http://localhost:8080/refresh`, but that
-wouldn't work across the network (for example, to test a mobile browser you need
-to connect to the event source by it's ip address, not `localhost`). By omitting
-the protocol and host, `refresh.js` will use the ones in `window.location` (the
-url in the browser window). Another option is to use a path like `/refresh` and
-then reverse proxy that to `http://localhost:8080/refresh`.
+`data-events-uri` is the location of the event source (the PowerSync
+container). We could use the full URL like `http://localhost:8080/powersync`,
+but that wouldn't work across the network (for example, to test a mobile
+browser you need to connect to the event source by it's ip address, not
+`localhost`). By omitting the protocol and host, `powersync.js` will use the
+ones in `window.location` (the url in the browser window). Another option is to
+use a path like `/powersync` and then reverse proxy that to
+`http://localhost:8080/powersync`.
 
 `data-events-topic` is the topic to subscribe to. We used the topic name
-"refresh", but you could use your app's name.
+"powersync", but you could use your app's name.
 
 ### 3. Send a request
 
@@ -98,7 +100,7 @@ To refresh the page, send a `html` event:
 ```sh
 curl -X POST \
   -H "Authorization: Bearer $TOKEN" \
-  -d "topic=refresh&data=html" \
+  -d "topic=powersync&data=html" \
   http://localhost:8080/.well-known/mercure
 ```
 
@@ -135,7 +137,7 @@ autocmd BufWritePost *.html,*.js
       'curl', '--fail', '--silent', '--show-error',
       '-X', 'POST',
       '-H', 'Authorization: Bearer (your token)',
-      '--data', 'topic=refresh&data=html',
+      '--data', 'topic=powersync&data=html',
       'http://localhost:8080/.well-known/mercure'
     ],
     {'err_cb': function('g:CbJobFailed')}
@@ -147,7 +149,7 @@ autocmd BufWritePost *.css
       'curl', '--fail', '--silent', '--show-error',
       '-X', 'POST',
       '-H', 'Authorization: Bearer (your token)',
-      '--data', 'topic=refresh&data=css',
+      '--data', 'topic=powersync&data=css',
       'http://localhost:8080/.well-known/mercure'
     ],
     {'err_cb': function('g:CbJobFailed')}
