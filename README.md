@@ -11,13 +11,14 @@
 
 Test many browsers at once - Chrome, Safari, Firefox, Desktop/Mobile, etc.
 
+### Features
+
 1. **Browsers updated as you edit** (requires editor integration)
 2. **DOM events synced across browsers** (scroll, click, touch, etc.)
 
 - No polling
 - No file watching
-- No delay
-- No server log pollution
+- Very little delay
 - No need for a "development" or "live" server
 
 ## Quick Start
