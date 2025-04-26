@@ -7,19 +7,12 @@
   <i>Browser Syncing for Web Developers</i>
 </p>
 
-## Overview
+## Features
 
-Test many browsers at once - Chrome, Safari, Firefox, Desktop/Mobile, etc.
+Use many browsers at once - Chrome, Safari, Firefox, Desktop/Mobile, etc.
 
-### Features
-
-1. **Browsers updated as you edit** (requires editor integration)
-2. **DOM events synced across browsers** (scroll, click, touch, etc.)
-
-- No polling
-- No file watching
-- Very little delay
-- No need for a "development" or "live" server
+1. **DOM events synced across browsers** (input, click, scroll, touch, etc.)
+2. **Browsers updated as you edit** (for Web developers)
 
 ## Quick Start
 
