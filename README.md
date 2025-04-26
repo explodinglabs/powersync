@@ -49,4 +49,5 @@ The DOM events should now be synced.
 
 ### 3. Update as you edit
 
-To have browsers update while you edit your site, see [editor integration]().
+To have the browsers update while you edit your site, see [editor
+integration]().
