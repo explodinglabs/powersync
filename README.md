@@ -4,7 +4,7 @@
 </p>
 
 <p align="center">
-  <i>BrowserSync alternative for Power Users</i>
+  <i>Browser Syncing for Web Developers</i>
 </p>
 
 ## Overview
