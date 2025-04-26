@@ -1,6 +1,6 @@
 <p align="center">
-  <img alt="Logo" height="100" src="https://github.com/explodinglabs/powersync/blob/main/.images/logo-light.png?raw=true#gh-light-mode-only" />
-  <img alt="Logo" height="100" src="https://github.com/explodinglabs/powersync/blob/main/.images/logo-dark.png?raw=true#gh-dark-mode-only" />
+  <img alt="Logo" height="400" src="https://github.com/explodinglabs/powersync/blob/main/.images/logo-light.png?raw=true#gh-light-mode-only" />
+  <img alt="Logo" height="400" src="https://github.com/explodinglabs/powersync/blob/main/.images/logo-dark.png?raw=true#gh-dark-mode-only" />
 </p>
 
 <p align="center">
