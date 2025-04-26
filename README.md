@@ -7,55 +7,29 @@
   <i>BrowserSync alternative for Power Users</i>
 </p>
 
-## Overview
+Test many browsers at once - Chrome, Safari, Firefox, Desktop/Mobile, etc.
 
-<p align="center">
-  <img alt="Architecture diagram" src="https://github.com/explodinglabs/powersync/blob/main/.images/architecture-light.svg?raw=true#gh-light-mode-only" />
-  <img alt="Architecture diagram" src="https://github.com/explodinglabs/powersync/blob/main/.images/architecture-dark.svg?raw=true#gh-dark-mode-only" />
-</p>
-
-### How it works
-
-1. Send a `POST` request to the event source.
-2. Event source emits the request as a Server-Sent Event.
-3. The webpage is connected to the event source and is listening for events.
-4. The webpage receives the event and refreshes itself.
-
-### Benefits of this method
+1. All browsers updated as you edit. (requires editor integration)
+2. DOM events synced across browsers (scroll, click, touch, etc.)
 
 - No polling
-- Immediate effect, no delay
+- No file watching
+- No delay
 - No server log pollution
-- Test many browsers at once - Chrome, Safari, Mobile, etc.
-- No need for a "development server"
+- No need for a "development" or "live" server
 
-## Installation
+## Quick Start
 
 ### 1. Start the PowerSync service
 
-The service runs inside a Docker container, so ensure [Docker is
-installed](https://docs.docker.com/get-docker/).
-
-Start the PowerSync container (this is just [Mercure](https://mercure.rocks/) with
-a little configuration):
+Start the PowerSync container (this is just [Mercure](https://mercure.rocks/)
+with a little configuration):
 
 ```sh
 docker run --rm --name powersync --publish 8080:80 ghcr.io/explodinglabs/powersync
 ```
 
-Test it with:
-
-```sh
-curl 'http://localhost:8080/.well-known/mercure?topic=powersync'
-```
-
-You should see:
-
-```
-:
-```
-
-### 2. Add a script to your web page
+### 2. Add the PowerSync script to your web page
 
 Include the `powersync.js` script in your HTML (put this at the bottom, right
 before `</body>`):
