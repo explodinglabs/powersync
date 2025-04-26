@@ -7,10 +7,12 @@
   <i>BrowserSync alternative for Power Users</i>
 </p>
 
+## Overview
+
 Test many browsers at once - Chrome, Safari, Firefox, Desktop/Mobile, etc.
 
-1. All browsers **updated as you edit**. (requires editor integration)
-2. **DOM events synced** across browsers (scroll, click, touch, etc.)
+1. **All browsers updated as you edit** (requires editor integration)
+2. **DOM events synced across browsers** (scroll, click, touch, etc.)
 
 - No polling
 - No file watching
