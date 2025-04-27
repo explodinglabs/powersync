@@ -1,12 +1,25 @@
-const originalLinks: {
+import { Message } from "./types.js";
+
+type OriginalLink = {
   element: HTMLLinkElement;
   originalHref: string;
-}[] = [];
+};
+
+const originalLinks: OriginalLink[] = [];
+
+function refreshOriginalLinks() {
+  originalLinks.length = 0; // Clear the array
+
+  // Capture all original links
+  document.querySelectorAll('link[rel="stylesheet"]').forEach((link) => {
+    if (link instanceof HTMLLinkElement && link.href) {
+      originalLinks.push({ element: link, originalHref: link.href });
+    }
+  });
+}
 
 // Handle the CSS event
-function handleCssEvent(event: MessageEvent) {
-  const file = JSON.parse(event.data).file;
-
+function handleCssTmp(file: string) {
   originalLinks.forEach(({ element, originalHref }) => {
     // Set href to the new tmp version with query string
     if (originalHref.endsWith(file)) {
@@ -60,9 +73,7 @@ function updateElement(oldEl: Element, newEl: Element) {
   }
 }
 
-function handleHtmlEvent(event: MessageEvent) {
-  const file = JSON.parse(event.data).file;
-
+function handleHtmlTmp(file: string) {
   fetch(`/tmp.${file}?v=${Date.now()}`)
     .then((res) => res.text())
     .then((html) => {
@@ -94,40 +105,21 @@ function handleHtmlEvent(event: MessageEvent) {
 
       updateElement(document.head, newHead);
       updateElement(document.body, newBody);
+
+      refreshOriginalLinks();
     })
     .catch((err) => console.error("Failed to load html-tmp:", err));
 }
 
-export function subscribe(uri: string, topic: string): void {
-  // Load the original links
-  document.querySelectorAll('link[rel="stylesheet"]').forEach((link) => {
-    if (link instanceof HTMLLinkElement && link.href) {
-      originalLinks.push({ element: link, originalHref: link.href });
-    }
-  });
+export function setupRefresh(): void {
+  refreshOriginalLinks();
+}
 
-  const url = new URL(uri);
-  url.searchParams.append("topic", topic);
-
-  const eventSource = new EventSource(url);
-
-  eventSource.onopen = (event: Event) => {
-    console.log("eventSource open");
-  };
-
-  eventSource.onerror = (event: Event) => {
-    console.log("eventSource error");
-  };
-
-  // Listen for updates on CSS and HTML
-  eventSource.onmessage = (event) => {
-    const data = JSON.parse(event.data);
-
-    // Handle CSS and HTML updates
-    if (data.event === "css-tmp") {
-      handleCssEvent(event);
-    } else if (data.event === "html-tmp") {
-      handleHtmlEvent(event);
-    }
-  };
+export function handleRefreshMsgs(msg: Message): void {
+  console.log(msg.type);
+  if (msg.type === "css-tmp") {
+    handleCssTmp(msg.params.file);
+  } else if (msg.type === "html-tmp") {
+    handleHtmlTmp(msg.params.file);
+  }
 }

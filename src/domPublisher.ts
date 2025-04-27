@@ -1,9 +1,7 @@
-function publishEvent(
-  uri: string,
-  topic: string,
-  type: string,
-  payload: Record<string, any>
-): void {
+import { DomMessage } from "./types.js";
+import { programmaticEvents } from "./domSubscriber.js";
+
+function publishMessage(uri: string, topic: string, msg: DomMessage): void {
   fetch(uri, {
     method: "POST",
     headers: {
@@ -12,7 +10,7 @@ function publishEvent(
     },
     body: new URLSearchParams({
       topic,
-      data: JSON.stringify({ type, payload, sender: crypto.randomUUID() }),
+      data: JSON.stringify(msg),
     }),
   });
 }
@@ -40,10 +38,14 @@ function getDomPath(el: HTMLElement): string {
   return stack.slice(1).join(" > ");
 }
 
-export function publish(uri: string, topic: string): void {
+export function republishDomEvents(
+  uri: string,
+  topic: string,
+  senderId: string
+): void {
   [
     "change",
-    "click",
+    "click", // Done
     "input",
     "keydown",
     "keyup",
@@ -54,7 +56,7 @@ export function publish(uri: string, topic: string): void {
     "pushState",
     "replaceState",
     "reset",
-    "scroll",
+    "scroll", // Done
     "submit",
     "touchend",
     "touchmove",
@@ -63,16 +65,31 @@ export function publish(uri: string, topic: string): void {
     window.addEventListener(
       eventName,
       (e: Event) => {
-        let payload: Record<string, any> = {};
+        if (!programmaticEvents[e.type]) {
+          if (e.target) {
+            const target = e.target as HTMLElement;
 
-        if (e.target) {
-          const target = e.target as HTMLElement;
-          payload.selector = getDomPath(target);
-          payload.value = (target as HTMLInputElement).value ?? null;
-          payload.scrollY = window.scrollY;
+            const msg: DomMessage = {
+              senderId: senderId,
+              type: e.type,
+              params: {
+                selector: getDomPath(target),
+                value:
+                  target instanceof HTMLInputElement ||
+                  target instanceof HTMLTextAreaElement
+                    ? target.value
+                    : target instanceof HTMLElement && target.isContentEditable
+                    ? target.innerHTML.replace(/&nbsp;/g, " ") // Replace &nbsp; with a space
+                    : target instanceof HTMLSelectElement
+                    ? target.value
+                    : null,
+                scrollY: window.scrollY,
+              },
+            };
+
+            publishMessage(uri, topic, msg);
+          }
         }
-
-        publishEvent(uri, topic, e.type, payload);
       },
       true // useCapture = true to catch upstream events
     );

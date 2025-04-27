@@ -1,9 +1,280 @@
 "use strict";
 (() => {
-  // src/refresh.ts
+  // src/domSubscriber.ts
+  var programmaticEvents = {};
+  function withProgrammaticEvent(eventType, callback) {
+    programmaticEvents[eventType] = true;
+    requestAnimationFrame(() => {
+      programmaticEvents[eventType] = false;
+    });
+    callback();
+  }
+  var dispatchers = {
+    change: (el) => {
+      el.dispatchEvent(new Event("change", { bubbles: true, cancelable: true }));
+    },
+    click: (el) => {
+      el.dispatchEvent(
+        new MouseEvent("click", {
+          bubbles: true,
+          cancelable: true,
+          view: window
+        })
+      );
+    },
+    input: (el, value) => {
+      if (el instanceof HTMLSelectElement) {
+        el.value = value;
+        el.dispatchEvent(
+          new Event("change", { bubbles: true, cancelable: true })
+        );
+      } else if (el instanceof HTMLElement && el.isContentEditable) {
+        el.textContent = value;
+        el.dispatchEvent(
+          new Event("input", {
+            bubbles: true,
+            cancelable: true
+          })
+        );
+      } else {
+        if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) {
+          el.value = value;
+        }
+        el.dispatchEvent(new Event("input", { bubbles: true, cancelable: true }));
+      }
+    },
+    keydown: (el, input) => {
+      el.dispatchEvent(
+        new KeyboardEvent("keydown", {
+          bubbles: true,
+          cancelable: true,
+          key: input
+          // could fill in later if you want smarter behavior
+        })
+      );
+    },
+    keyup: (el) => {
+      el.dispatchEvent(
+        new KeyboardEvent("keyup", {
+          bubbles: true,
+          cancelable: true,
+          key: ""
+        })
+      );
+    },
+    pointerdown: (el) => {
+      el.dispatchEvent(
+        new PointerEvent("pointerdown", {
+          bubbles: true,
+          cancelable: true,
+          pointerId: 1,
+          pointerType: "touch",
+          isPrimary: true
+        })
+      );
+    },
+    pointermove: (el) => {
+      el.dispatchEvent(
+        new PointerEvent("pointermove", {
+          bubbles: true,
+          cancelable: true,
+          pointerId: 1,
+          pointerType: "touch",
+          isPrimary: true
+        })
+      );
+    },
+    pointerup: (el) => {
+      el.dispatchEvent(
+        new PointerEvent("pointerup", {
+          bubbles: true,
+          cancelable: true,
+          pointerId: 1,
+          pointerType: "touch",
+          isPrimary: true
+        })
+      );
+    },
+    popstate: (el) => {
+      el.dispatchEvent(
+        new PopStateEvent("popstate", {
+          bubbles: true,
+          cancelable: true,
+          state: history.state
+        })
+      );
+    },
+    pushState: (el) => {
+      history.pushState({}, "", window.location.href);
+    },
+    replaceState: (el) => {
+      history.replaceState({}, "", window.location.href);
+    },
+    reset: (el) => {
+      el.dispatchEvent(
+        new Event("reset", {
+          bubbles: true,
+          cancelable: true
+        })
+      );
+    },
+    scroll: (el, _, scrollY) => {
+      if (el instanceof HTMLElement) {
+        el.scrollTop = scrollY;
+      } else if (el instanceof Document) {
+        document.documentElement.scrollTop = scrollY;
+      } else if (el instanceof Window) {
+        el.scrollTo(0, scrollY);
+      }
+    },
+    submit: (el) => {
+      el.dispatchEvent(
+        new Event("submit", {
+          bubbles: true,
+          cancelable: true
+        })
+      );
+    },
+    touchend: (el) => {
+      el.dispatchEvent(
+        new TouchEvent("touchend", {
+          bubbles: true,
+          cancelable: true,
+          touches: [],
+          targetTouches: [],
+          changedTouches: []
+        })
+      );
+    },
+    touchmove: (el) => {
+      el.dispatchEvent(
+        new TouchEvent("touchmove", {
+          bubbles: true,
+          cancelable: true,
+          touches: [],
+          targetTouches: [],
+          changedTouches: []
+        })
+      );
+    },
+    touchstart: (el) => {
+      el.dispatchEvent(
+        new TouchEvent("touchstart", {
+          bubbles: true,
+          cancelable: true,
+          touches: [],
+          targetTouches: [],
+          changedTouches: []
+        })
+      );
+    }
+  };
+  function handleDomMsgs({ type, params }) {
+    const dispatcher = dispatchers[type];
+    if (dispatcher) {
+      let targetElement = window;
+      if (params.selector) {
+        targetElement = document.querySelector(params.selector) ?? window;
+      }
+      withProgrammaticEvent(type, () => {
+        dispatcher(targetElement, params.value, params.scrollY);
+      });
+    }
+  }
+
+  // src/domPublisher.ts
+  function publishMessage(uri2, topic2, msg) {
+    fetch(uri2, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJtZXJjdXJlIjp7InB1Ymxpc2giOlsiKiJdfX0.PXwpfIGng6KObfZlcOXvcnWCJOWTFLtswGI5DZuWSK4`
+      },
+      body: new URLSearchParams({
+        topic: topic2,
+        data: JSON.stringify(msg)
+      })
+    });
+  }
+  function getDomPath(el) {
+    const stack = [];
+    while (el.parentNode) {
+      let sibCount = 0;
+      let sibIndex = 0;
+      for (let i = 0; i < el.parentNode.children.length; i++) {
+        const sibling = el.parentNode.children[i];
+        if (sibling.tagName === el.tagName) {
+          if (sibling === el) {
+            sibIndex = sibCount;
+          }
+          sibCount++;
+        }
+      }
+      const tag = el.tagName.toLowerCase();
+      const selector = sibCount > 1 ? `${tag}:nth-of-type(${sibIndex + 1})` : tag;
+      stack.unshift(selector);
+      el = el.parentNode;
+    }
+    return stack.slice(1).join(" > ");
+  }
+  function republishDomEvents(uri2, topic2, senderId2) {
+    [
+      "change",
+      "click",
+      // Done
+      "input",
+      "keydown",
+      "keyup",
+      "pointerdown",
+      "pointermove",
+      "pointerup",
+      "popstate",
+      "pushState",
+      "replaceState",
+      "reset",
+      "scroll",
+      // Done
+      "submit",
+      "touchend",
+      "touchmove",
+      "touchstart"
+    ].forEach((eventName) => {
+      window.addEventListener(
+        eventName,
+        (e) => {
+          if (!programmaticEvents[e.type]) {
+            if (e.target) {
+              const target = e.target;
+              const msg = {
+                senderId: senderId2,
+                type: e.type,
+                params: {
+                  selector: getDomPath(target),
+                  value: target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement ? target.value : target instanceof HTMLElement && target.isContentEditable ? target.innerHTML.replace(/&nbsp;/g, " ") : target instanceof HTMLSelectElement ? target.value : null,
+                  scrollY: window.scrollY
+                }
+              };
+              publishMessage(uri2, topic2, msg);
+            }
+          }
+        },
+        true
+        // useCapture = true to catch upstream events
+      );
+    });
+  }
+
+  // src/refreshSubscriber.ts
   var originalLinks = [];
-  function handleCssEvent(event) {
-    const file = JSON.parse(event.data).file;
+  function refreshOriginalLinks() {
+    originalLinks.length = 0;
+    document.querySelectorAll('link[rel="stylesheet"]').forEach((link) => {
+      if (link instanceof HTMLLinkElement && link.href) {
+        originalLinks.push({ element: link, originalHref: link.href });
+      }
+    });
+  }
+  function handleCssTmp(file) {
     originalLinks.forEach(({ element, originalHref }) => {
       if (originalHref.endsWith(file)) {
         element.href = `/tmp.${file}?v=${Date.now()}`;
@@ -49,8 +320,7 @@
       }
     }
   }
-  function handleHtmlEvent(event) {
-    const file = JSON.parse(event.data).file;
+  function handleHtmlTmp(file) {
     fetch(`/tmp.${file}?v=${Date.now()}`).then((res) => res.text()).then((html) => {
       const tempDom = document.createElement("html");
       tempDom.innerHTML = html;
@@ -73,114 +343,54 @@
       });
       updateElement(document.head, newHead);
       updateElement(document.body, newBody);
+      refreshOriginalLinks();
     }).catch((err) => console.error("Failed to load html-tmp:", err));
   }
-  function subscribe(uri2, topic2) {
-    document.querySelectorAll('link[rel="stylesheet"]').forEach((link) => {
-      if (link instanceof HTMLLinkElement && link.href) {
-        originalLinks.push({ element: link, originalHref: link.href });
-      }
-    });
-    const url = new URL(uri2);
-    url.searchParams.append("topic", topic2);
-    const eventSource = new EventSource(url);
-    eventSource.onopen = (event) => {
-      console.log("eventSource open");
-    };
-    eventSource.onerror = (event) => {
-      console.log("eventSource error");
-    };
-    eventSource.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      if (data.event === "css-tmp") {
-        handleCssEvent(event);
-      } else if (data.event === "html-tmp") {
-        handleHtmlEvent(event);
-      }
-    };
+  function setupRefresh() {
+    refreshOriginalLinks();
   }
-
-  // src/dom.ts
-  function publishEvent(uri2, topic2, type, payload) {
-    fetch(uri2, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJtZXJjdXJlIjp7InB1Ymxpc2giOlsiKiJdfX0.PXwpfIGng6KObfZlcOXvcnWCJOWTFLtswGI5DZuWSK4`
-      },
-      body: new URLSearchParams({
-        topic: topic2,
-        data: JSON.stringify({ type, payload, sender: crypto.randomUUID() })
-      })
-    });
-  }
-  function getDomPath(el) {
-    const stack = [];
-    while (el.parentNode) {
-      let sibCount = 0;
-      let sibIndex = 0;
-      for (let i = 0; i < el.parentNode.children.length; i++) {
-        const sibling = el.parentNode.children[i];
-        if (sibling.tagName === el.tagName) {
-          if (sibling === el) {
-            sibIndex = sibCount;
-          }
-          sibCount++;
-        }
-      }
-      const tag = el.tagName.toLowerCase();
-      const selector = sibCount > 1 ? `${tag}:nth-of-type(${sibIndex + 1})` : tag;
-      stack.unshift(selector);
-      el = el.parentNode;
+  function handleRefreshMsgs(msg) {
+    console.log(msg.type);
+    if (msg.type === "css-tmp") {
+      handleCssTmp(msg.params.file);
+    } else if (msg.type === "html-tmp") {
+      handleHtmlTmp(msg.params.file);
     }
-    return stack.slice(1).join(" > ");
-  }
-  function publish(uri2, topic2) {
-    [
-      "change",
-      "click",
-      "input",
-      "keydown",
-      "keyup",
-      "pointerdown",
-      "pointermove",
-      "pointerup",
-      "popstate",
-      "pushState",
-      "replaceState",
-      "reset",
-      "scroll",
-      "submit",
-      "touchend",
-      "touchmove",
-      "touchstart"
-    ].forEach((eventName) => {
-      window.addEventListener(
-        eventName,
-        (e) => {
-          let payload = {};
-          if (e.target) {
-            const target = e.target;
-            payload.selector = getDomPath(target);
-            payload.value = target.value ?? null;
-            payload.scrollY = window.scrollY;
-          }
-          publishEvent(uri2, topic2, e.type, payload);
-        },
-        true
-        // useCapture = true to catch upstream events
-      );
-    });
   }
 
   // src/powersync.ts
+  function generateUUID() {
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
+      const r = Math.random() * 16 | 0;
+      const v = c === "x" ? r : r & 3 | 8;
+      return v.toString(16);
+    });
+  }
+  var senderId = generateUUID();
   var scriptTag = document.getElementById("powersync");
   var uri = scriptTag.dataset.eventsUri;
   if (uri.startsWith(":")) {
     uri = `${window.location.protocol}//${window.location.hostname}${uri}`;
   }
+  console.log(uri);
   var topic = scriptTag.dataset.eventsTopic;
-  subscribe(uri, topic);
-  publish(uri, topic);
+  var url = new URL(uri);
+  url.searchParams.append("topic", topic);
+  var eventSource = new EventSource(url);
+  eventSource.onopen = (event) => {
+    console.log("eventSource open");
+  };
+  eventSource.onerror = (event) => {
+    console.log("eventSource error");
+  };
+  setupRefresh();
+  eventSource.onmessage = (event) => {
+    const msg = JSON.parse(event.data);
+    if (msg.senderId != senderId) {
+      handleDomMsgs(msg);
+      handleRefreshMsgs(msg);
+    }
+  };
+  republishDomEvents(uri, topic, senderId);
 })();
 //# sourceMappingURL=powersync.dev.js.map
