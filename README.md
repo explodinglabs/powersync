@@ -10,7 +10,7 @@
 Use many browsers at once - Chrome, Safari, Firefox, Desktop/Mobile, etc.
 
 1. **DOM events synced across browsers** (input, click, scroll, etc.)
-2. **Browsers updated as you edit** (for Web developers)
+2. **Browsers updated as you edit**
 
 ## Quick Start
 
