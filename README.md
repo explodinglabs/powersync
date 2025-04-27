@@ -22,9 +22,9 @@ Start the PowerSync container:
 docker run -d --name powersync -p 8080:80 ghcr.io/explodinglabs/powersync
 ```
 
-### 2. Add the PowerSync script to your web page
+### 2. Add code snippet to your HTML
 
-Include this in your HTML (right before `</body>`):
+Insert this right before `</body>`:
 
 ```html
 <script
