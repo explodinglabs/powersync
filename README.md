@@ -4,7 +4,7 @@
 </p>
 
 <p align="center">
-  <i>Powerful Browser Synchronization</i>
+  <i>Browser Synchronization</i>
 </p>
 
 ## Features
