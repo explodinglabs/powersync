@@ -7,12 +7,10 @@
   <i>Browser Synchronization</i>
 </p>
 
-## Features
-
 Use many browsers at once - Chrome, Safari, Firefox, Desktop/Mobile, etc.
 
-1. **DOM events synced across browsers** (input, click, scroll, etc.)
-2. **Browsers updated as you edit** (for Web developers)
+1. **Actions synced across browsers** (input, click, scroll, etc.)
+2. **Browsers updated as you edit**
 
 ## Quick Start
 
@@ -24,9 +22,9 @@ Start the PowerSync container:
 docker run -d --name powersync -p 8080:80 ghcr.io/explodinglabs/powersync
 ```
 
-### 2. Add the PowerSync script to your web page
+### 2. Add code snippet to your HTML
 
-Include this in your HTML (right before `</body>`):
+Insert this right before `</body>`:
 
 ```html
 <script
