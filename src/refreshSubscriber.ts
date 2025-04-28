@@ -1,125 +1,91 @@
-import { Message } from "./types.js";
+import { DiffDOM } from "diff-dom"; // Changed to named import
+import { Message } from "./types.js"; // Assuming Message type is defined
 
-type OriginalLink = {
-  element: HTMLLinkElement;
-  originalHref: string;
-};
+// Create an instance of DiffDOM
+const diffDOM = new DiffDOM();
 
-const originalLinks: OriginalLink[] = [];
+// Store a map of link elements by their href
+let linkMap: Record<string, HTMLLinkElement> = {};
 
-function refreshOriginalLinks() {
-  originalLinks.length = 0; // Clear the array
-
-  // Capture all original links
+// Refresh and capture current link elements
+function refreshLinks() {
+  linkMap = {}; // Reset the link map before refreshing
   document.querySelectorAll('link[rel="stylesheet"]').forEach((link) => {
     if (link instanceof HTMLLinkElement && link.href) {
-      originalLinks.push({ element: link, originalHref: link.href });
+      linkMap[new URL(link.href, location.origin).pathname] = link;
     }
   });
 }
 
-// Handle the CSS event
-function handleCssTmp(file: string) {
-  originalLinks.forEach(({ element, originalHref }) => {
-    // Set href to the new tmp version with query string
-    if (originalHref.endsWith(file)) {
-      element.href = `/tmp.${file}?v=${Date.now()}`;
+function rerunNewScripts() {
+  const processed = new WeakSet<HTMLScriptElement>();
+
+  document.querySelectorAll("script").forEach((script) => {
+    if (processed.has(script)) return; // Already processed
+
+    // Skip if it's an external script that already loaded
+    if (
+      script.src &&
+      document.querySelector(`script[src="${script.src}"]`) !== script
+    ) {
+      return;
     }
-  });
-}
 
-function updateElement(oldEl: Element, newEl: Element) {
-  if (oldEl.isEqualNode(newEl)) {
-    return;
-  }
-
-  if (oldEl.nodeName !== newEl.nodeName) {
-    oldEl.replaceWith(newEl);
-    return;
-  }
-
-  if (oldEl instanceof HTMLElement && newEl instanceof HTMLElement) {
-    for (const { name } of Array.from(oldEl.attributes)) {
-      if (!newEl.hasAttribute(name)) {
-        oldEl.removeAttribute(name);
-      }
-    }
-    for (const { name, value } of Array.from(newEl.attributes)) {
-      if (oldEl.getAttribute(name) !== value) {
-        oldEl.setAttribute(name, value || "");
-      }
-    }
-  }
-
-  if (oldEl.childNodes.length === 0 && newEl.childNodes.length === 0) {
-    if (oldEl.textContent !== newEl.textContent) {
-      oldEl.textContent = newEl.textContent;
-    }
-    return;
-  }
-
-  const oldChildren = Array.from(oldEl.childNodes);
-  const newChildren = Array.from(newEl.childNodes);
-
-  const len = Math.max(oldChildren.length, newChildren.length);
-  for (let i = 0; i < len; i++) {
-    if (!oldChildren[i]) {
-      oldEl.appendChild(newChildren[i]);
-    } else if (!newChildren[i]) {
-      oldEl.removeChild(oldChildren[i]);
+    const newScript = document.createElement("script");
+    if (script.src) {
+      newScript.src = script.src;
     } else {
-      updateElement(oldChildren[i] as Element, newChildren[i] as Element);
+      newScript.textContent = script.textContent;
+    }
+
+    // Copy attributes (important for type="module", defer, etc.)
+    Array.from(script.attributes).forEach((attr) => {
+      newScript.setAttribute(attr.name, attr.value);
+    });
+
+    processed.add(newScript);
+    script.replaceWith(newScript);
+  });
+}
+
+async function handleHtml(filename: string) {
+  try {
+    const html = await fetch(`${filename}?v=${Date.now()}`).then((res) =>
+      res.text()
+    );
+
+    const temp = document.createElement("html");
+    temp.innerHTML = html;
+
+    const diffResult = diffDOM.diff(document.documentElement, temp);
+    diffDOM.apply(document.documentElement, diffResult);
+
+    rerunNewScripts(); // Reinitialize new scripts
+    refreshLinks();
+  } catch (err) {
+    console.error("Failed to update HTML:", err);
+  }
+}
+
+// Handle the update of CSS content
+function handleCss(filename: string) {
+  for (const path in linkMap) {
+    if (path == filename.replace(/tmp\./, "")) {
+      linkMap[path].href = `${filename}?v=${Date.now()}`;
     }
   }
 }
 
-function handleHtmlTmp(file: string) {
-  fetch(`/tmp.${file}?v=${Date.now()}`)
-    .then((res) => res.text())
-    .then((html) => {
-      const tempDom = document.createElement("html");
-      tempDom.innerHTML = html;
-
-      const newHead = tempDom.querySelector("head");
-      const newBody = tempDom.querySelector("body");
-      if (!newBody || !newHead) return;
-
-      originalLinks.forEach(({ element, originalHref }) => {
-        const originalPath = new URL(originalHref, location.origin).pathname;
-
-        const link = Array.from(
-          newHead.querySelectorAll('link[rel="stylesheet"]')
-        ).find((linkEl) => {
-          if (linkEl instanceof HTMLLinkElement) {
-            return (
-              new URL(linkEl.href, location.origin).pathname === originalPath
-            );
-          }
-          return false;
-        });
-
-        if (link && link instanceof HTMLLinkElement) {
-          link.href = element.href; // Restore the live href (might be tmp version)
-        }
-      });
-
-      updateElement(document.head, newHead);
-      updateElement(document.body, newBody);
-
-      refreshOriginalLinks();
-    })
-    .catch((err) => console.error("Failed to load html-tmp:", err));
+// Initialize the refresh process by capturing the current links
+export function setupRefresh() {
+  refreshLinks();
 }
 
-export function setupRefresh(): void {
-  refreshOriginalLinks();
-}
-
-export function handleRefreshMsgs(msg: Message): void {
-  console.log(msg.type);
-  if (msg.type === "css-tmp") {
-    handleCssTmp(msg.params.file);
-  } else if (msg.type === "html-tmp") {
-    handleHtmlTmp(msg.params.file);
+// Handle refresh messages (either CSS or HTML)
+export function handleRefreshMsgs(msg: Message) {
+  if (msg.type === "css") {
+    handleCss(msg.params.filename);
+  } else if (msg.type === "html") {
+    handleHtml(msg.params.filename);
   }
 }

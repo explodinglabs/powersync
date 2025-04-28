@@ -1,13 +1,15 @@
 {
   "compilerOptions": {
-    "target": "es2020",
+    "esModuleInterop": true,
+    "lib": ["es2020", "es2015", "dom"], // Ensure you are targeting at least es2020 and "dom" for browser features
     "module": "esnext",
-    "lib": "es2020,dom",
-    "rootDir": "src",
-    "outDir": "dist",
-    "strict": true,
+    "moduleResolution": "node",
     "noImplicitAny": true,
-    "esModuleInterop": false
+    "outDir": "dist",
+    "rootDir": "src",
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "es2020"
   },
   "include": ["src"]
 }
