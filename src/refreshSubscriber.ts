@@ -1,8 +1,6 @@
-import { DiffDOM } from "diff-dom"; // Changed to named import
+import { diffAndApply } from "./diff.js"; // Changed to named import
 import { Message } from "./types.js"; // Assuming Message type is defined
-
-// Create an instance of DiffDOM
-const diffDOM = new DiffDOM();
+import { widgetRegistry } from "./widgetRegistry.js";
 
 // Store a map of link elements by their href
 let linkMap: Record<string, HTMLLinkElement> = {};
@@ -17,56 +15,6 @@ function refreshLinks() {
   });
 }
 
-function rerunNewScripts() {
-  const processed = new WeakSet<HTMLScriptElement>();
-
-  document.querySelectorAll("script").forEach((script) => {
-    if (processed.has(script)) return; // Already processed
-
-    // Skip if it's an external script that already loaded
-    if (
-      script.src &&
-      document.querySelector(`script[src="${script.src}"]`) !== script
-    ) {
-      return;
-    }
-
-    const newScript = document.createElement("script");
-    if (script.src) {
-      newScript.src = script.src;
-    } else {
-      newScript.textContent = script.textContent;
-    }
-
-    // Copy attributes (important for type="module", defer, etc.)
-    Array.from(script.attributes).forEach((attr) => {
-      newScript.setAttribute(attr.name, attr.value);
-    });
-
-    processed.add(newScript);
-    script.replaceWith(newScript);
-  });
-}
-
-async function handleHtml(filename: string) {
-  try {
-    const html = await fetch(`${filename}?v=${Date.now()}`).then((res) =>
-      res.text()
-    );
-
-    const temp = document.createElement("html");
-    temp.innerHTML = html;
-
-    const diffResult = diffDOM.diff(document.documentElement, temp);
-    diffDOM.apply(document.documentElement, diffResult);
-
-    rerunNewScripts(); // Reinitialize new scripts
-    refreshLinks();
-  } catch (err) {
-    console.error("Failed to update HTML:", err);
-  }
-}
-
 // Handle the update of CSS content
 function handleCss(filename: string) {
   for (const path in linkMap) {
@@ -76,16 +24,56 @@ function handleCss(filename: string) {
   }
 }
 
-// Initialize the refresh process by capturing the current links
-export function setupRefresh() {
+// Reload a single external JS file
+function handleJs(filename: string) {
+  document
+    .querySelectorAll<HTMLScriptElement>("script[src]")
+    .forEach((script) => {
+      const scriptPath = new URL(script.src, location.origin).pathname;
+      if (scriptPath === filename.replace(/tmp\./, "")) {
+        const newScript = document.createElement("script");
+
+        // Copy attributes
+        Array.from(script.attributes).forEach((attr) => {
+          newScript.setAttribute(attr.name, attr.value);
+        });
+
+        // Important: set src after copying attributes!
+        newScript.src = `${filename}?v=${Date.now()}`;
+
+        script.replaceWith(newScript);
+      }
+    });
+}
+
+async function handleHtml(filename: string) {
+  const html = await fetch(`${filename}?v=${Date.now()}`).then((res) =>
+    res.text()
+  );
+  const temp = document.createElement("html");
+  temp.innerHTML = html;
+  diffAndApply(document.documentElement, temp);
+
   refreshLinks();
+}
+
+export function setupRefresh() {
+  document.addEventListener("DOMContentLoaded", () => {
+    refreshLinks();
+  });
 }
 
 // Handle refresh messages (either CSS or HTML)
 export function handleRefreshMsgs(msg: Message) {
-  if (msg.type === "css") {
-    handleCss(msg.params.filename);
-  } else if (msg.type === "html") {
-    handleHtml(msg.params.filename);
+  switch (msg.type) {
+    case "css":
+      handleCss(msg.params.filename);
+      break;
+    case "html":
+      handleHtml(msg.params.filename);
+      break;
+    case "js":
+      handleJs(msg.params.filename);
+      break;
   }
 }

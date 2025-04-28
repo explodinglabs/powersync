@@ -21,7 +21,6 @@ var uri: string = scriptTag.dataset.eventsUri as string;
 if (uri.startsWith(":")) {
   uri = `${window.location.protocol}//${window.location.hostname}${uri}`;
 }
-console.log(uri);
 const topic: string = scriptTag.dataset.eventsTopic as string;
 const url = new URL(uri);
 url.searchParams.append("topic", topic);
