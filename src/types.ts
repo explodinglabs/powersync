@@ -7,9 +7,10 @@ export type Message = {
 };
 
 export type DomParams = Params & {
-  selector: string;
-  value: string | null;
-  scrollY: number;
+  selector: string; // To find the dom element
+  inputValue: string; // Needed for input, textarea, contenteditable
+  pointer: { x: number; y: number }; // Needed for pointer and mouse events
+  scroll: { x: number; y: number }; // Needed for syncing scroll
 };
 
 export type DomMessage = Message & {

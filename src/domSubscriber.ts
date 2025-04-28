@@ -10,14 +10,10 @@ function withProgrammaticEvent(eventType: string, callback: () => void) {
   callback();
 }
 
-const dispatchers: Record<
-  string,
-  (el: Element | Window, value: any, scrollY: number) => void
-> = {
+const dispatchers: Record<string, (el, params) => void> = {
   change: (el) => {
     el.dispatchEvent(new Event("change", { bubbles: true, cancelable: true }));
   },
-
   click: (el) => {
     el.dispatchEvent(
       new MouseEvent("click", {
@@ -27,17 +23,16 @@ const dispatchers: Record<
       })
     );
   },
-
-  input: (el, value) => {
+  input: (el, params) => {
     if (el instanceof HTMLSelectElement) {
       // If it's a dropdown, ensure the value is updated and trigger 'change'
-      el.value = value;
+      el.value = params.inputValue;
       el.dispatchEvent(
         new Event("change", { bubbles: true, cancelable: true })
       );
     } else if (el instanceof HTMLElement && el.isContentEditable) {
       // Handle input for contenteditable elements
-      el.textContent = value; // Sync the text content with the new value
+      el.textContent = params.inputValue; // Sync the text content with the new value
       el.dispatchEvent(
         new Event("input", {
           bubbles: true,
@@ -46,23 +41,21 @@ const dispatchers: Record<
       ); // Dispatch the input event to propagate changes
     } else {
       if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) {
-        el.value = value;
+        el.value = params.inputValue;
       }
       // Handle input for other types of elements like <input>, <textarea>
       el.dispatchEvent(new Event("input", { bubbles: true, cancelable: true }));
     }
   },
-
-  keydown: (el, input) => {
+  keydown: (el, params) => {
     el.dispatchEvent(
       new KeyboardEvent("keydown", {
         bubbles: true,
         cancelable: true,
-        key: input, // could fill in later if you want smarter behavior
+        key: params.inputValue,
       })
     );
   },
-
   keyup: (el) => {
     el.dispatchEvent(
       new KeyboardEvent("keyup", {
@@ -72,43 +65,45 @@ const dispatchers: Record<
       })
     );
   },
-
-  pointerdown: (el) => {
+  pointerdown: (el, params) => {
     el.dispatchEvent(
       new PointerEvent("pointerdown", {
         bubbles: true,
         cancelable: true,
+        clientX: params.pointer.x,
+        clientY: params.pointer.y,
         pointerId: 1,
         pointerType: "touch",
         isPrimary: true,
       })
     );
   },
-
-  pointermove: (el) => {
+  pointermove: (el, params) => {
     el.dispatchEvent(
       new PointerEvent("pointermove", {
         bubbles: true,
         cancelable: true,
+        clientX: params.pointer.x,
+        clientY: params.pointer.y,
         pointerId: 1,
         pointerType: "touch",
         isPrimary: true,
       })
     );
   },
-
-  pointerup: (el) => {
+  pointerup: (el, params) => {
     el.dispatchEvent(
       new PointerEvent("pointerup", {
         bubbles: true,
         cancelable: true,
+        clientX: params.pointer.x,
+        clientY: params.pointer.y,
         pointerId: 1,
         pointerType: "touch",
         isPrimary: true,
       })
     );
   },
-
   popstate: (el) => {
     el.dispatchEvent(
       new PopStateEvent("popstate", {
@@ -118,19 +113,16 @@ const dispatchers: Record<
       })
     );
   },
-
   pushState: (el) => {
     // Note: pushState itself doesn't emit an event — we can simulate a
     // "popstate" if needed
     history.pushState({}, "", window.location.href);
   },
-
   replaceState: (el) => {
     // Similar: replaceState doesn't emit a real event either, but you can call
     // replaceState manually
     history.replaceState({}, "", window.location.href);
   },
-
   reset: (el) => {
     el.dispatchEvent(
       new Event("reset", {
@@ -139,17 +131,15 @@ const dispatchers: Record<
       })
     );
   },
-
-  scroll: (el, _, scrollY) => {
+  scroll: (el, params) => {
     if (el instanceof HTMLElement) {
-      el.scrollTop = scrollY;
+      el.scrollTop = params.scroll.y;
     } else if (el instanceof Document) {
-      document.documentElement.scrollTop = scrollY;
+      document.documentElement.scrollTop = params.scroll.y;
     } else if (el instanceof Window) {
-      el.scrollTo(0, scrollY);
+      el.scrollTo(params.scroll.x, params.scroll.y);
     }
   },
-
   submit: (el) => {
     el.dispatchEvent(
       new Event("submit", {
@@ -158,7 +148,6 @@ const dispatchers: Record<
       })
     );
   },
-
   touchend: (el) => {
     el.dispatchEvent(
       new TouchEvent("touchend", {
@@ -170,7 +159,6 @@ const dispatchers: Record<
       })
     );
   },
-
   touchmove: (el) => {
     el.dispatchEvent(
       new TouchEvent("touchmove", {
@@ -182,7 +170,6 @@ const dispatchers: Record<
       })
     );
   },
-
   touchstart: (el) => {
     el.dispatchEvent(
       new TouchEvent("touchstart", {
@@ -205,7 +192,7 @@ export function handleDomMsgs({ type, params }: Message): void {
     }
 
     withProgrammaticEvent(type, () => {
-      dispatcher(targetElement, params.value, params.scrollY);
+      dispatcher(targetElement, params);
     });
   }
 }

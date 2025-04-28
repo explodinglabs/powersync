@@ -45,7 +45,7 @@ export function republishDomEvents(
 ): void {
   [
     "change",
-    "click", // Done
+    "click",
     "input",
     "keydown",
     "keyup",
@@ -56,7 +56,7 @@ export function republishDomEvents(
     "pushState",
     "replaceState",
     "reset",
-    "scroll", // Done
+    "scroll",
     "submit",
     "touchend",
     "touchmove",
@@ -74,7 +74,7 @@ export function republishDomEvents(
               type: e.type,
               params: {
                 selector: getDomPath(target),
-                value:
+                inputValue:
                   target instanceof HTMLInputElement ||
                   target instanceof HTMLTextAreaElement
                     ? target.value
@@ -83,7 +83,14 @@ export function republishDomEvents(
                     : target instanceof HTMLSelectElement
                     ? target.value
                     : null,
-                scrollY: window.scrollY,
+                pointer: {
+                  x: (e as MouseEvent).clientX,
+                  y: (e as MouseEvent).clientY,
+                },
+                scroll: {
+                  x: window.scrollX,
+                  y: window.scrollY,
+                },
               },
             };
 
