@@ -183,7 +183,7 @@ const dispatchers: Record<string, (el, params) => void> = {
   },
 };
 
-export function handleDomMsgs({ type, params }: Message): void {
+export function handleDomMsg({ type, params }: Message): void {
   const dispatcher = dispatchers[type];
   if (dispatcher) {
     let targetElement: Element | Window = window;

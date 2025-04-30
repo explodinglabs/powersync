@@ -1,12 +1,11 @@
-import { diffAndApply } from "./diff.js"; // Changed to named import
 import { Message } from "./types.js"; // Assuming Message type is defined
-import { widgetRegistry } from "./widgetRegistry.js";
+import morphdom from "morphdom";
 
 // Store a map of link elements by their href
 let linkMap: Record<string, HTMLLinkElement> = {};
 
 // Refresh and capture current link elements
-function refreshLinks() {
+export function refreshLinks() {
   linkMap = {}; // Reset the link map before refreshing
   document.querySelectorAll('link[rel="stylesheet"]').forEach((link) => {
     if (link instanceof HTMLLinkElement && link.href) {
@@ -50,21 +49,52 @@ async function handleHtml(filename: string) {
   const html = await fetch(`${filename}?v=${Date.now()}`).then((res) =>
     res.text()
   );
-  const temp = document.createElement("html");
-  temp.innerHTML = html;
-  diffAndApply(document.documentElement, temp);
+
+  // Create a document fragment with the new HTML
+  const parser = new DOMParser();
+  const newDoc = parser.parseFromString(html, "text/html");
+
+  // Patch the body in one go
+  morphdom(document.documentElement, newDoc.documentElement, {
+    onBeforeElUpdated: (fromEl, toEl) => {
+      // Skip morphing for elements marked as a component
+      if (fromEl.hasAttribute("data-component")) {
+        return false;
+      }
+
+      if (fromEl.hasAttribute("id")) {
+        switch (fromEl.tagName) {
+          case "INPUT":
+            (toEl as HTMLInputElement).value = (fromEl as HTMLInputElement).value;
+            (toEl as HTMLInputElement).checked = (fromEl as HTMLInputElement).checked;
+            break;
+          case "TEXTAREA":
+            (toEl as HTMLTextAreaElement).value = (fromEl as HTMLTextAreaElement).value;
+            break;
+          case "SELECT":
+            (toEl as HTMLSelectElement).value = (fromEl as HTMLSelectElement).value;
+            break;
+          case "OPTION":
+            (toEl as HTMLOptionElement).selected = (fromEl as HTMLOptionElement).selected;
+            break;
+        }
+      }
+
+      // Preserve focus
+      if (document.activeElement === fromEl) {
+        setTimeout(() => (fromEl as HTMLElement).focus(), 0);
+        return fromEl.tagName === "BODY" ? true : false;
+      }
+
+      return true;
+    },
+  });
 
   refreshLinks();
 }
 
-export function setupRefresh() {
-  document.addEventListener("DOMContentLoaded", () => {
-    refreshLinks();
-  });
-}
-
 // Handle refresh messages (either CSS or HTML)
-export function handleRefreshMsgs(msg: Message) {
+export function handleRefreshMsg(msg: Message) {
   switch (msg.type) {
     case "css":
       handleCss(msg.params.filename);

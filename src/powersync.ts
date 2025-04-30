@@ -1,7 +1,7 @@
 import { Message } from "./types.js";
-import { republishDomEvents } from "./domPublisher.js";
-import { handleDomMsgs } from "./domSubscriber.js";
-import { setupRefresh, handleRefreshMsgs } from "./refreshSubscriber.js";
+import { republishDomEvent } from "./domPublisher.js";
+import { handleDomMsg } from "./domSubscriber.js";
+import { handleRefreshMsg, refreshLinks } from "./refreshSubscriber.js";
 
 function generateUUID(): string {
   // Generate a UUID v4 (random-based UUID)
@@ -25,6 +25,8 @@ const topic: string = scriptTag.dataset.eventsTopic as string;
 const url = new URL(uri);
 url.searchParams.append("topic", topic);
 
+// Setup Event Source
+
 const eventSource = new EventSource(url);
 
 eventSource.onopen = (event) => {
@@ -35,16 +37,44 @@ eventSource.onerror = (event) => {
   console.log("eventSource error");
 };
 
-setupRefresh();
-
 eventSource.onmessage = (event) => {
   const msg: Message = JSON.parse(event.data);
 
   // Ignore own messages
   if (msg.senderId != senderId) {
-    handleDomMsgs(msg);
-    handleRefreshMsgs(msg);
+    handleDomMsg(msg);
+    handleRefreshMsg(msg);
   }
 };
 
-republishDomEvents(uri, topic, senderId);
+// Setup Event Listeners
+
+[
+  "change",
+  "click",
+  "input",
+  "keydown",
+  "keyup",
+  "pointerdown",
+  "pointermove",
+  "pointerup",
+  "popstate",
+  "pushState",
+  "replaceState",
+  "reset",
+  "scroll",
+  "submit",
+  "touchend",
+  "touchmove",
+  "touchstart",
+].forEach((eventName: string) => {
+  window.addEventListener(
+    eventName,
+    (e) => {
+      republishDomEvent(uri, topic, senderId, event);
+    },
+    true // useCapture = true to catch upstream events
+  );
+});
+
+refreshLinks();

@@ -38,67 +38,40 @@ function getDomPath(el: HTMLElement): string {
   return stack.slice(1).join(" > ");
 }
 
-export function republishDomEvents(
+export function republishDomEvent(
   uri: string,
   topic: string,
-  senderId: string
+  senderId: string,
+  event: Event
 ): void {
-  [
-    "change",
-    "click",
-    "input",
-    "keydown",
-    "keyup",
-    "pointerdown",
-    "pointermove",
-    "pointerup",
-    "popstate",
-    "pushState",
-    "replaceState",
-    "reset",
-    "scroll",
-    "submit",
-    "touchend",
-    "touchmove",
-    "touchstart",
-  ].forEach((eventName: string) => {
-    window.addEventListener(
-      eventName,
-      (e: Event) => {
-        if (!programmaticEvents[e.type]) {
-          if (e.target) {
-            const target = e.target as HTMLElement;
+  if (event.target && !programmaticEvents[event.type]) {
+    const target = event.target as HTMLElement;
 
-            const msg: DomMessage = {
-              senderId: senderId,
-              type: e.type,
-              params: {
-                selector: getDomPath(target),
-                inputValue:
-                  target instanceof HTMLInputElement ||
-                  target instanceof HTMLTextAreaElement
-                    ? target.value
-                    : target instanceof HTMLElement && target.isContentEditable
-                    ? target.innerHTML.replace(/&nbsp;/g, " ") // Replace &nbsp; with a space
-                    : target instanceof HTMLSelectElement
-                    ? target.value
-                    : null,
-                pointer: {
-                  x: (e as MouseEvent).clientX,
-                  y: (e as MouseEvent).clientY,
-                },
-                scroll: {
-                  x: window.scrollX,
-                  y: window.scrollY,
-                },
-              },
-            };
-
-            publishMessage(uri, topic, msg);
-          }
-        }
+    const msg: DomMessage = {
+      senderId: senderId,
+      type: event.type,
+      params: {
+        selector: getDomPath(target),
+        inputValue:
+          target instanceof HTMLInputElement ||
+          target instanceof HTMLTextAreaElement
+            ? target.value
+            : target instanceof HTMLElement && target.isContentEditable
+            ? target.innerHTML.replace(/&nbsp;/g, " ") // Replace &nbsp; with a space
+            : target instanceof HTMLSelectElement
+            ? target.value
+            : null,
+        pointer: {
+          x: (event as MouseEvent).clientX,
+          y: (event as MouseEvent).clientY,
+        },
+        scroll: {
+          x: window.scrollX,
+          y: window.scrollY,
+        },
       },
-      true // useCapture = true to catch upstream events
-    );
-  });
+    };
+
+    publishMessage(uri, topic, msg);
+  }
 }
