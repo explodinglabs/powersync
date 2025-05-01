@@ -1,5 +1,5 @@
-import { DomMessage } from "./types.js";
-import { programmaticEvents } from "./domSubscriber.js";
+import { DomMessage } from "./types";
+import { programmaticEvents } from "./domSubscriber";
 
 function publishMessage(uri: string, topic: string, msg: DomMessage): void {
   fetch(uri, {

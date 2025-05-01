@@ -1,4 +1,4 @@
-import { Message } from "./types.js"; // Assuming Message type is defined
+import { Message } from "./types"; // Assuming Message type is defined
 import morphdom from "morphdom";
 
 // Store a map of link elements by their href
@@ -15,34 +15,10 @@ export function refreshLinks() {
 }
 
 // Handle the update of CSS content
-function handleCss(filename: string) {
+function handleCss() {
   for (const path in linkMap) {
-    if (path == filename.replace(/tmp\./, "")) {
-      linkMap[path].href = `${filename}?v=${Date.now()}`;
-    }
+    linkMap[path].href = `${path}?v=${Date.now()}`;
   }
-}
-
-// Reload a single external JS file
-function handleJs(filename: string) {
-  document
-    .querySelectorAll<HTMLScriptElement>("script[src]")
-    .forEach((script) => {
-      const scriptPath = new URL(script.src, location.origin).pathname;
-      if (scriptPath === filename.replace(/tmp\./, "")) {
-        const newScript = document.createElement("script");
-
-        // Copy attributes
-        Array.from(script.attributes).forEach((attr) => {
-          newScript.setAttribute(attr.name, attr.value);
-        });
-
-        // Important: set src after copying attributes!
-        newScript.src = `${filename}?v=${Date.now()}`;
-
-        script.replaceWith(newScript);
-      }
-    });
 }
 
 async function handleHtml(filename: string) {
@@ -93,17 +69,36 @@ async function handleHtml(filename: string) {
   refreshLinks();
 }
 
+// Reload all external JS files
+function handleJs() {
+  document
+    .querySelectorAll<HTMLScriptElement>("script[src]")
+    .forEach((script) => {
+      const newScript = document.createElement("script");
+
+      // Copy attributes
+      Array.from(script.attributes).forEach((attr) => {
+        newScript.setAttribute(attr.name, attr.value);
+      });
+
+      // Important: set src after copying attributes!
+      newScript.src = `${script.src.split("?")[0]}?v=${Date.now()}`;
+
+      script.replaceWith(newScript);
+    });
+}
+
 // Handle refresh messages (either CSS or HTML)
 export function handleRefreshMsg(msg: Message) {
   switch (msg.type) {
     case "css":
-      handleCss(msg.params.filename);
+      handleCss();
       break;
     case "html":
       handleHtml(msg.params.filename);
       break;
     case "js":
-      handleJs(msg.params.filename);
+      handleJs();
       break;
   }
 }

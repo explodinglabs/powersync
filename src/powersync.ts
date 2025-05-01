@@ -1,7 +1,7 @@
-import { Message } from "./types.js";
-import { republishDomEvent } from "./domPublisher.js";
-import { handleDomMsg } from "./domSubscriber.js";
-import { handleRefreshMsg, refreshLinks } from "./refreshSubscriber.js";
+import { Message } from "./types";
+import { republishDomEvent } from "./domPublisher";
+import { handleDomMsg } from "./domSubscriber";
+import { handleRefreshMsg, refreshLinks } from "./refresh";
 
 function generateUUID(): string {
   // Generate a UUID v4 (random-based UUID)

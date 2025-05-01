@@ -1,4 +1,4 @@
-import { Message, DomParams } from "./types.js";
+import { Message, DomParams } from "./types";
 
 export const programmaticEvents: Record<string, boolean> = {};
 
