@@ -1,7 +1,7 @@
-import { Message } from "./types";
 import { republishDomEvent } from "./domPublisher";
 import { handleDomMsg } from "./domSubscriber";
 import { handleRefreshMsg, refreshLinks } from "./refresh";
+import { Message } from "./types";
 
 function generateUUID(): string {
   // Generate a UUID v4 (random-based UUID)
@@ -29,11 +29,11 @@ url.searchParams.append("topic", topic);
 
 const eventSource = new EventSource(url);
 
-eventSource.onopen = (event) => {
+eventSource.onopen = (_) => {
   console.log("eventSource open");
 };
 
-eventSource.onerror = (event) => {
+eventSource.onerror = (_) => {
   console.log("eventSource error");
 };
 
@@ -70,7 +70,7 @@ eventSource.onmessage = (event) => {
 ].forEach((eventName: string) => {
   window.addEventListener(
     eventName,
-    (e) => {
+    (event) => {
       republishDomEvent(uri, topic, senderId, event);
     },
     true // useCapture = true to catch upstream events

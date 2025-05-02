@@ -1,4 +1,4 @@
-import { Message, DomParams } from "./types";
+import { Message } from "./types";
 
 export const programmaticEvents: Record<string, boolean> = {};
 
@@ -11,7 +11,7 @@ function withProgrammaticEvent(eventType: string, callback: () => void) {
 }
 
 const dispatchers: Record<string, (el, params) => void> = {
-  change: (el) => {
+  change: (el, _) => {
     el.dispatchEvent(new Event("change", { bubbles: true, cancelable: true }));
   },
   click: (el) => {
@@ -113,12 +113,12 @@ const dispatchers: Record<string, (el, params) => void> = {
       })
     );
   },
-  pushState: (el) => {
+  pushState: () => {
     // Note: pushState itself doesn't emit an event — we can simulate a
     // "popstate" if needed
     history.pushState({}, "", window.location.href);
   },
-  replaceState: (el) => {
+  replaceState: () => {
     // Similar: replaceState doesn't emit a real event either, but you can call
     // replaceState manually
     history.replaceState({}, "", window.location.href);

@@ -14,10 +14,9 @@ Use many browsers at once - Chrome, Safari, Firefox, Desktop/Mobile, etc.
 
 ## Quick Start
 
-### 1. Start the PowerSync service
+### 1. Start the Events hub
 
-Ensure [Docker is installed](https://docs.docker.com/get-docker/), and start the
-events hub:
+Ensure [Docker is installed](https://docs.docker.com/get-docker/), and run:
 
 ```sh
 docker run -d --name powersync -p 8080:80 ghcr.io/explodinglabs/powersync

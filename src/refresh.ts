@@ -1,5 +1,6 @@
-import { Message } from "./types"; // Assuming Message type is defined
 import morphdom from "morphdom";
+
+import { Message } from "./types"; // Assuming Message type is defined
 
 // Store a map of link elements by their href
 let linkMap: Record<string, HTMLLinkElement> = {};
@@ -21,6 +22,7 @@ function handleCss() {
   }
 }
 
+// Undocumented feature, not useful at this point
 async function handleHtml(filename: string) {
   const html = await fetch(`${filename}?v=${Date.now()}`).then((res) =>
     res.text()
