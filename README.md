@@ -37,9 +37,22 @@ Insert this right before `</body>`:
 ></script>
 ```
 
-The DOM events should now be synced.
+The actions (DOM events) should now be synced.
 
-### 3. Update as you edit (Web developers)
+### 3. Update as you edit
 
-To have the browsers update while you edit your site, see [editor
-integration]().
+To refresh all browsers, send an HTTP request:
+
+```sh
+curl --request POST \
+  --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJtZXJjdXJlIjp7InB1Ymxpc2giOlsiKiJdfX0.PXwpfIGng6KObfZlcOXvcnWCJOWTFLtswGI5DZuWSK4' \
+  --data-urlencode topic=powersync \
+  --data-urlencode data='{"type": "refresh"}' \
+  http://localhost:8080/.well-known/mercure
+```
+
+For the `data` part, these are the types of messages:
+
+- `refresh`: Does a `window.location.reload()`.
+- `css`: Refresh the externally loaded stylesheets (`<link rel=stylesheet...`)
+- `js`: Restart the externally loaded javascript.

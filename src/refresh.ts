@@ -1,5 +1,3 @@
-import morphdom from "morphdom";
-
 import { Message } from "./types"; // Assuming Message type is defined
 
 // Store a map of link elements by their href
@@ -15,60 +13,37 @@ export function refreshLinks() {
   });
 }
 
+function isExternal(url) {
+  var match = url.match(
+    /^([^:/?#]+:)?(?:\/\/([^/?#]*))?([^?#]+)?(\?[^#]*)?(#.*)?/
+  );
+  if (
+    typeof match[1] === "string" &&
+    match[1].length > 0 &&
+    match[1].toLowerCase() !== location.protocol
+  )
+    return true;
+  if (
+    typeof match[2] === "string" &&
+    match[2].length > 0 &&
+    match[2].replace(
+      new RegExp(
+        ":(" + { "http:": 80, "https:": 443 }[location.protocol] + ")?$"
+      ),
+      ""
+    ) !== location.host
+  )
+    return true;
+  return false;
+}
+
 // Handle the update of CSS content
 function handleCss() {
   for (const path in linkMap) {
-    linkMap[path].href = `${path}?v=${Date.now()}`;
+    if (!isExternal(linkMap[path].href)) {
+      linkMap[path].href = `${path}?v=${Date.now()}`;
+    }
   }
-}
-
-// Undocumented feature, not useful at this point
-async function handleHtml(filename: string) {
-  const html = await fetch(`${filename}?v=${Date.now()}`).then((res) =>
-    res.text()
-  );
-
-  // Create a document fragment with the new HTML
-  const parser = new DOMParser();
-  const newDoc = parser.parseFromString(html, "text/html");
-
-  // Patch the body in one go
-  morphdom(document.documentElement, newDoc.documentElement, {
-    onBeforeElUpdated: (fromEl, toEl) => {
-      // Skip morphing for elements marked as a component
-      if (fromEl.hasAttribute("data-component")) {
-        return false;
-      }
-
-      if (fromEl.hasAttribute("id")) {
-        switch (fromEl.tagName) {
-          case "INPUT":
-            (toEl as HTMLInputElement).value = (fromEl as HTMLInputElement).value;
-            (toEl as HTMLInputElement).checked = (fromEl as HTMLInputElement).checked;
-            break;
-          case "TEXTAREA":
-            (toEl as HTMLTextAreaElement).value = (fromEl as HTMLTextAreaElement).value;
-            break;
-          case "SELECT":
-            (toEl as HTMLSelectElement).value = (fromEl as HTMLSelectElement).value;
-            break;
-          case "OPTION":
-            (toEl as HTMLOptionElement).selected = (fromEl as HTMLOptionElement).selected;
-            break;
-        }
-      }
-
-      // Preserve focus
-      if (document.activeElement === fromEl) {
-        setTimeout(() => (fromEl as HTMLElement).focus(), 0);
-        return fromEl.tagName === "BODY" ? true : false;
-      }
-
-      return true;
-    },
-  });
-
-  refreshLinks();
 }
 
 // Reload all external JS files
@@ -83,21 +58,21 @@ function handleJs() {
         newScript.setAttribute(attr.name, attr.value);
       });
 
-      // Important: set src after copying attributes!
+      // Set src after copying attributes
       newScript.src = `${script.src.split("?")[0]}?v=${Date.now()}`;
 
       script.replaceWith(newScript);
     });
 }
 
-// Handle refresh messages (either CSS or HTML)
+// Handle refresh messages (either CSS, HTML, or refresh)
 export function handleRefreshMsg(msg: Message) {
   switch (msg.type) {
+    case "refresh":
+      window.location.reload();
+      break;
     case "css":
       handleCss();
-      break;
-    case "html":
-      handleHtml(msg.params.filename);
       break;
     case "js":
       handleJs();
