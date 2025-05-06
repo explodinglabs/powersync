@@ -15,6 +15,8 @@ development:
   scroll, etc.)
 - 🔁 **Automatic browser refresh when you edit code**
 
+https://github.com/user-attachments/assets/11899fba-bb7d-4b44-ad25-fe5eba3f2856
+
 ## 🚀 Quick Start
 
 ### 1. Start the Event Hub
@@ -46,7 +48,7 @@ DOM events like input, scroll, and clicks will now sync across browsers.
 
 ### 3. Trigger Browser Updates After Edits
 
-After building your site, notify browsers with a single
+After building your site, notify browsers with an
 HTTP request:
 
 ```sh
