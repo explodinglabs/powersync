@@ -29,8 +29,7 @@ docker run -d --name powersync -p 8080:80 ghcr.io/explodinglabs/powersync
 
 ### 2. Add PowerSync to Your HTML
 
-Insert the following snippet before the closing </body>
-tag:
+Insert the following snippet before the closing </body> tag:
 
 ```html
 <script
