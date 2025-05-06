@@ -48,8 +48,7 @@ DOM events like input, scroll, and clicks will now sync across browsers.
 
 ### 3. Trigger Browser Updates After Edits
 
-After building your site, notify browsers with an
-HTTP request:
+After building your site, notify browsers with an HTTP request:
 
 ```sh
 curl -X POST http://localhost:8080/.well-known/mercure \
