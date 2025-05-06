@@ -49,7 +49,7 @@ DOM events like input, scroll, and clicks will now sync across browsers.
 
 ### 3. Trigger Browser Updates After Edits
 
-After building your site, notify browsers with a single
+After building your site, notify browsers with an
 HTTP request:
 
 ```sh
