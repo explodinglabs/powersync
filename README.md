@@ -15,6 +15,8 @@ development:
   scroll, etc.)
 - 🔁 **Automatic browser refresh when you edit code**
 
+https://github.com/user-attachments/assets/11899fba-bb7d-4b44-ad25-fe5eba3f2856
+
 ## 🚀 Quick Start
 
 ### 1. Start the Event Hub
