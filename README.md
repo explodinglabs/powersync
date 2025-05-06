@@ -7,24 +7,30 @@
   <i>Browser Synchronization</i>
 </p>
 
-Use many browsers at once - Chrome, Safari, Firefox, Desktop/Mobile, etc.
+Use many browsers at once — Chrome, Safari, Firefox,
+Desktop/Mobile — and keep them in sync during
+development:
 
-1. **Actions synced across browsers** (input, click, scroll, etc.)
-2. **Browsers updated as you edit**
+- ✅ Actions synced across browsers (input, click,
+  scroll, etc.)
+- 🔁 Automatic browser refresh when you edit code
 
-## Quick Start
+## 🚀 Quick Start
 
-### 1. Start the Events hub
+### 1. Start the Event Hub
 
-Ensure [Docker is installed](https://docs.docker.com/get-docker/), and run:
+Make sure [Docker is
+installed](https://docs.docker.com/get-docker/), then
+run:
 
 ```sh
 docker run -d --name powersync -p 8080:80 ghcr.io/explodinglabs/powersync
 ```
 
-### 2. Add code snippet to your HTML
+### 2. Add PowerSync to Your HTML
 
-Insert this right before `</body>`:
+Insert the following snippet before the closing </body>
+tag:
 
 ```html
 <script
@@ -37,22 +43,24 @@ Insert this right before `</body>`:
 ></script>
 ```
 
-The actions (DOM events) should now be synced.
+DOM events like input, scroll, and clicks will now sync across browsers.
 
-### 3. Update as you edit
+### 3. Trigger Browser Updates After Edits
 
-To refresh all browsers, send an HTTP request:
+After building your site, notify browsers with a single
+HTTP request:
 
 ```sh
-curl --request POST \
-  --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJtZXJjdXJlIjp7InB1Ymxpc2giOlsiKiJdfX0.PXwpfIGng6KObfZlcOXvcnWCJOWTFLtswGI5DZuWSK4' \
+curl -X POST http://localhost:8080/.well-known/mercure \
+  -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJtZXJjdXJlIjp7InB1Ymxpc2giOlsiKiJdfX0.PXwpfIGng6KObfZlcOXvcnWCJOWTFLtswGI5DZuWSK4' \
   --data-urlencode topic=powersync \
-  --data-urlencode data='{"type": "refresh"}' \
-  http://localhost:8080/.well-known/mercure
+  --data-urlencode data='{"type": "refresh"}'
 ```
 
-For the `data` part, these are the types of messages:
+#### Supported `type` Values
 
-- `refresh`: Does a `window.location.reload()`.
-- `css`: Refresh the externally loaded stylesheets (`<link rel=stylesheet...`)
-- `js`: Restart the externally loaded javascript.
+| Type    | Description                           |
+| ------- | ------------------------------------- |
+| refresh | Reloads the entire page               |
+| css     | Reloads all external stylesheets      |
+| js      | Reloads all external JavaScript files |
