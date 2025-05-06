@@ -1,6 +1,5 @@
+.gitignore
 node_modules
-# Ignore sourcemaps
 *.map
 package*
 dist/*.dev.js
-

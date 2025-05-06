@@ -38,7 +38,7 @@ tag:
   type="text/javascript"
   data-events-uri=":8080/.well-known/mercure"
   data-events-topic="powersync"
-  src="https://powersync.github.io/powersync.js"
+  src="https://powersync.github.io/powersync-0.1.0.js"
   async
 ></script>
 ```
