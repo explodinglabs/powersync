@@ -11,9 +11,9 @@ Use many browsers at once — Chrome, Safari, Firefox,
 Desktop/Mobile — and keep them in sync during
 development:
 
-- ✅ Actions synced across browsers (input, click,
+- ✅ **Actions synced across browsers** (input, click,
   scroll, etc.)
-- 🔁 Automatic browser refresh when you edit code
+- 🔁 **Automatic browser refresh when you edit code**
 
 ## 🚀 Quick Start
 
