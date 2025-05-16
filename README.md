@@ -1,6 +1,6 @@
 <p align="center">
-  <img alt="Logo" height="300" src="https://github.com/explodinglabs/powersync/blob/main/images/logo-light.png?raw=true#gh-light-mode-only" />
-  <img alt="Logo" height="300" src="https://github.com/explodinglabs/powersync/blob/main/images/logo-dark.png?raw=true#gh-dark-mode-only" />
+  <img alt="Logo light" height="300" src="https://github.com/explodinglabs/powersync/blob/main/images/logo-light.png?raw=true#gh-light-mode-only" />
+  <img alt="Logo dark" height="300" src="https://github.com/explodinglabs/powersync/blob/main/images/logo-dark.png?raw=true#gh-dark-mode-only" />
 </p>
 
 <p align="center">
@@ -17,9 +17,16 @@ development:
 
 https://github.com/user-attachments/assets/11899fba-bb7d-4b44-ad25-fe5eba3f2856
 
+## Architecture
+
+<p align="center">
+  <img alt="Architecture light" height="300" src="https://github.com/explodinglabs/powersync/blob/main/images/architecture-light.svg?raw=true#gh-light-mode-only" />
+  <img alt="Architecture dark" height="300" src="https://github.com/explodinglabs/powersync/blob/main/images/architecture-dark.svg?raw=true#gh-dark-mode-only" />
+</p>
+
 ## 🚀 Quick Start
 
-### 1. Start the Event Hub
+### 1. Start the Events Hub
 
 Make sure [Docker is
 installed](https://docs.docker.com/get-docker/), then
