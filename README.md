@@ -7,9 +7,8 @@
   <i>Browser Synchronization</i>
 </p>
 
-Use many browsers at once — Chrome, Safari, Firefox,
-Desktop/Mobile — and keep them in sync during
-development:
+Use many browsers at once — Chrome, Safari, Firefox, Desktop/Mobile — and keep
+them in sync during development:
 
 - ✅ **Actions synced across browsers** (input, click,
   scroll, etc.)
