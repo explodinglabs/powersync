@@ -37,7 +37,8 @@ docker run -d --name powersync -p 8080:80 ghcr.io/explodinglabs/powersync
 
 ### 2. Add PowerSync to Your HTML
 
-Insert the following snippet before the closing </body> tag:
+Insert the following snippet (generally before the `</body>` closing tag, in
+certain cases it only works in `<head>`):
 
 ```html
 <script
@@ -46,7 +47,6 @@ Insert the following snippet before the closing </body> tag:
   data-events-uri=":8080/.well-known/mercure"
   data-events-topic="powersync"
   src="https://explodinglabs.com/powersync/powersync-0.1.0.js"
-  async
 ></script>
 ```
 
