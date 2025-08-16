@@ -30,11 +30,11 @@ url.searchParams.append("topic", topic);
 const eventSource = new EventSource(url);
 
 eventSource.onopen = (_) => {
-  console.log("eventSource open");
+  console.log(`PowerSync listening on ${topic}`);
 };
 
 eventSource.onerror = (_) => {
-  console.log("eventSource error");
+  console.log("PowerSync error");
 };
 
 eventSource.onmessage = (event) => {

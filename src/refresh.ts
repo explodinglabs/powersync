@@ -67,6 +67,7 @@ function handleJs() {
 
 // Handle refresh messages (either CSS, HTML, or refresh)
 export function handleRefreshMsg(msg: Message) {
+  console.log(msg.type);
   switch (msg.type) {
     case "refresh":
       window.location.reload();
