@@ -48,7 +48,7 @@ certain cases it only works in `<head>`):
 ```
 
 > [!TIP]
-> Since 0.1.1, add ?sync=true to the src url to sync DOM events like input,
+> Since 0.1.1, add `?sync=true` to the src url to sync DOM events like input,
 > scroll, and clicks across browsers.
 
 ### 3. Trigger Browser Updates After Edits
