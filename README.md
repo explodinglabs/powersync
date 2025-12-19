@@ -7,12 +7,9 @@
   <i>Browser Synchronization</i>
 </p>
 
-Use many browsers at once — Chrome, Safari, Firefox, Desktop/Mobile — and keep
-them in sync during development:
-
+- 🔁 **Automatic browser refresh as you edit text**
 - ✅ **Actions synced across browsers** (input, click,
-  scroll, etc.)
-- 🔁 **Automatic browser refresh when you edit code**
+  scroll, etc.) _optional_
 
 https://github.com/user-attachments/assets/11899fba-bb7d-4b44-ad25-fe5eba3f2856
 
