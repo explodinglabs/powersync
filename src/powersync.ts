@@ -49,32 +49,37 @@ eventSource.onmessage = (event) => {
 
 // Setup Event Listeners
 
-[
-  "change",
-  "click",
-  "input",
-  "keydown",
-  "keyup",
-  "pointerdown",
-  "pointermove",
-  "pointerup",
-  "popstate",
-  "pushState",
-  "replaceState",
-  "reset",
-  "scroll",
-  "submit",
-  "touchend",
-  "touchmove",
-  "touchstart",
-].forEach((eventName: string) => {
-  window.addEventListener(
-    eventName,
-    (event) => {
-      republishDomEvent(uri, topic, senderId, event);
-    },
-    true // useCapture = true to catch upstream events
-  );
-});
+const scriptUrl = new URL(scriptTag.src, window.location.href);
+const syncEnabled = scriptUrl.searchParams.get("sync") === "true";
+
+if (syncEnabled) {
+  [
+    "change",
+    "click",
+    "input",
+    "keydown",
+    "keyup",
+    "pointerdown",
+    "pointermove",
+    "pointerup",
+    "popstate",
+    "pushState",
+    "replaceState",
+    "reset",
+    "scroll",
+    "submit",
+    "touchend",
+    "touchmove",
+    "touchstart",
+  ].forEach((eventName: string) => {
+    window.addEventListener(
+      eventName,
+      (event) => {
+        republishDomEvent(uri, topic, senderId, event);
+      },
+      true // useCapture = true to catch upstream events
+    );
+  });
+}
 
 refreshLinks();

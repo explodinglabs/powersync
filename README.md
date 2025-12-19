@@ -46,11 +46,13 @@ certain cases it only works in `<head>`):
   type="text/javascript"
   data-events-uri=":8080/.well-known/mercure"
   data-events-topic="powersync"
-  src="https://explodinglabs.com/powersync/powersync-0.1.0.js"
+  src="https://explodinglabs.com/powersync/powersync-0.1.1.js"
 ></script>
 ```
 
-DOM events like input, scroll, and clicks will now sync across browsers.
+> [!TIP]
+> Since 0.1.1, add ?sync=true to the src url to sync DOM events like input,
+> scroll, and clicks across browsers.
 
 ### 3. Trigger Browser Updates After Edits
 
