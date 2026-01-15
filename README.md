@@ -51,6 +51,23 @@ certain cases it only works in `<head>`):
 > Since 0.1.1, add `?sync=true` to the src url to sync DOM events like input,
 > scroll, and clicks across browsers.
 
+Alternative method, excluding the production domain:
+
+```html
+<script>
+  if (location.hostname !== "myapp.com") {
+    const s = document.createElement("script");
+    s.id = "powersync";
+    s.type = "text/javascript";
+    s.async = true;
+    s.src = "https://explodinglabs.com/powersync/powersync-0.1.1.js";
+    s.dataset.eventsUri = ":8080/.well-known/mercure";
+    s.dataset.eventsTopic = "powersync";
+    document.head.appendChild(s);
+  }
+</script>
+```
+
 ### 3. Trigger Browser Updates After Edits
 
 After building your site, notify browsers with an HTTP request:
